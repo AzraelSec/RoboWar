@@ -1,4 +1,3 @@
-import { Vec2 } from './../physics/vec2';
 import { Resource } from './resourceLoader';
 export class Canvas {
     private static NCOL:number = 20;

@@ -11,9 +11,9 @@ export class Animation implements drawable{
     private _scaleFactor:number;
     private _speedFactor:number;
 
-    constructor(context:CanvasRenderingContext2D,resource:Resource, width:number, height:number, framesNumber:number, scaleFactor?:number, speedFactor?:number) {
+    constructor(context:CanvasRenderingContext2D, resource:Resource, width:number, framesNumber:number, scaleFactor?:number, speedFactor?:number) {
         this._spritesheet = resource;
-        this._height = height;
+        this._height = resource.content.height;
         this._width = width;
         this._context = context;
         this._framesNumber = framesNumber;
@@ -22,7 +22,7 @@ export class Animation implements drawable{
         this._speedFactor = speedFactor ? this.normSpeedFactor(speedFactor) : this._scaleFactor;
     }
 
-    public draw(x:number, y:number):void {
+    public draw(x:number, y:number): void {
         this._tickCounter = (this._tickCounter + this._speedFactor) % this._framesNumber;
         this._context.save();
         this._context.drawImage(
@@ -38,11 +38,11 @@ export class Animation implements drawable{
         this._context.restore();
     }
 
-    public get width():number {
+    public get width(): number {
         return this._width * this._scaleFactor;
     }
 
-    public get height():number {
+    public get height(): number {
         return this._height * this._scaleFactor;
     }
 
@@ -50,8 +50,11 @@ export class Animation implements drawable{
         this._speedFactor = this.normSpeedFactor(newVelocity);
     }
 
-    private normSpeedFactor(factor:number):number {
+    private normSpeedFactor(factor:number): number {
         return Math.abs(factor % 1);
     }
 
+    public reset(): void {
+        this._tickCounter = 0;
+    }
 }

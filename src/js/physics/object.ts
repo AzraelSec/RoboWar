@@ -43,10 +43,14 @@ export class GameObject implements IPhysical {
         this._image.draw(this._actualPosition.x, this._actualPosition.y);
     }
 
-    public getPosition(time:number):Vec2 {
+    public getPosition(time:number): Vec2 {
         let dt = time - this._firstUpdate;
         let px = this._initPosition.x + dt * this._velocity.x;
         let py = this._initPosition.y + dt * this._velocity.y;
         return new Vec2(px, py);
+    }
+    
+    protected changeRepresentation(newRepresentation: drawable): void {
+        this._image = newRepresentation;
     }
 }
