@@ -27,11 +27,8 @@ RM.resourcesPrefetch().then(() => {
         new Animation(canvas.context, RM.getResource('run'), 567, 8)
     );
 
-
-    let barrelImage = new StaticSprite(canvas.context, RM.getResource('red_barrell'), 0.7);
-
-    let player:Player = new Player(Vec2.Zero(), robotSprites, lastUpdate);
-    let barrell = new GameObject(new Vec2(200, 0), Vec2.Zero(), barrelImage, lastUpdate);
+    let player: Player = new Player(new Vec2(500, 0), robotSprites, lastUpdate);
+    player.inputAttach(document);
     requestAnimationFrame(step);
     function step(newTime) {
         if(newTime - lastUpdate > (1000 / GameObject.FPS)) {
@@ -40,7 +37,6 @@ RM.resourcesPrefetch().then(() => {
             canvas.context.save();
             canvas.context.translate(0, canvas.height);
             player.drawObject();
-            barrell.drawObject();
             canvas.context.restore();
             lastUpdate = newTime;
         }

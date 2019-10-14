@@ -1,7 +1,7 @@
 import { Resource } from './resourceLoader';
-import { drawable } from './drawable';
+import { IDrawable } from './drawable';
 
-export class StaticSprite implements drawable {
+export class StaticSprite implements IDrawable {
     private _spritesheet: Resource;
     private _width: number;
     private _height: number;
@@ -20,7 +20,7 @@ export class StaticSprite implements drawable {
         this._scaleFactor = scaleFactor || 0;
     }
 
-    draw(x: number, y: number): void {
+    draw(x: number, y: number, _: boolean): void {
         this._context.save();
         this._context.drawImage(
             this._spritesheet.content,
