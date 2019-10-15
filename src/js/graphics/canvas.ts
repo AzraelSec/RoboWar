@@ -21,7 +21,7 @@ export class Canvas {
     public clear() {
         this._context.save();
         this._context.fillStyle = this._backgroundTile;
-        this.context.scale(0.5, 0.5);
+        this._context.scale(0.5, 0.5);
         this._context.fillRect(0, 0, this._canvas.width * 2, this._canvas.height * 2);
         this._context.restore();
     }

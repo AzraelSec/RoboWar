@@ -1,3 +1,7 @@
+export enum Axis {
+    Horizontal, Vertical, Both
+} 
+
 export class Vec2 {
     private _x: number;
     private _y: number;

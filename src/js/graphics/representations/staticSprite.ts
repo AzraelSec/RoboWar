@@ -1,4 +1,4 @@
-import { Resource } from './resourceLoader';
+import { Resource } from '../resourceLoader';
 import { IDrawable } from './drawable';
 
 export class StaticSprite implements IDrawable {
@@ -17,7 +17,7 @@ export class StaticSprite implements IDrawable {
         this._height = resource.content.height;
         this._width = resource.content.width;
         this._context = context;
-        this._scaleFactor = scaleFactor || 0;
+        this._scaleFactor = scaleFactor || 0.8;
     }
 
     draw(x: number, y: number, _: boolean): void {
@@ -29,7 +29,7 @@ export class StaticSprite implements IDrawable {
             this._width,
             this._height,
             x,
-            y - this.height,
+            y,
             this.width,
             this.height
         );

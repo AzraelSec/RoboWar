@@ -1,7 +1,6 @@
 import { FallingObject } from './../physics/fallingObject';
-import { Animation } from './../graphics/animation';
-import { GameObject } from './../physics/object';
-import { Vec2 } from '../physics/vec2';
+import { Animation } from '../graphics/representations/animation';
+import { Vec2, Axis } from '../physics/vec2';
 
 enum MovementKeys {
     LEFT = 37,
@@ -66,7 +65,9 @@ export class Player extends FallingObject {
     private _playerActualMovement: MovementRequestState;
     private _playerMovementRequest: MovementRequestState;
 
-    constructor(initPosition: Vec2, statesResources: PlayerStatesResources, firstUpdate: number) {
+    private _worldBounds: any;
+
+    constructor(initPosition: Vec2, statesResources: PlayerStatesResources, firstUpdate: number, maxWidth: number, maxHeight: number) {
         super(initPosition, Vec2.Zero(), statesResources.idling, firstUpdate);
         this._playerState = PlayerStates.IDLING;
         this._actualResource = statesResources.idling;
@@ -79,10 +80,15 @@ export class Player extends FallingObject {
             left: false, right: false,
             jump: false, shot: false
         };
+        this._worldBounds = {
+            width: maxWidth,
+            height: maxHeight
+        }
     }
 
     public update(time: number): void {
         super.update(time);
+        this.boundsAdjustPosition(time);
         this.manageInputRequests(time);
     }
 
@@ -100,24 +106,51 @@ export class Player extends FallingObject {
         console.log('BANG!');
     }
 
+    // BOUNDS COLLISION HANDLING
+
+    private boundsAdjustPosition(time: number): void {
+        if(this._actualPosition.x < 0) {
+            this._actualPosition.x = 0;
+            this.setVelocity(time, 0, 0);
+        }
+        if(this._actualPosition.y < 0) {
+            this._actualPosition.y = 0;
+            this.setVelocity(time, this._velocity.x, 0);
+        }
+        if(this._actualPosition.x + this.width > this._worldBounds.width) {
+            this._actualPosition.x = this._worldBounds.width - this.width;
+            this.setVelocity(time, 0, 0);
+        }
+        if(this._actualPosition.y + this.height > this._worldBounds.height) {
+            this._actualPosition.y = this._worldBounds.height - this.height;
+            this.setVelocity(time, this._velocity.x, 0);
+            this.bottomBoundsHitHandling();
+        }
+    }
+
+    private bottomBoundsHitHandling(): void {
+        this._isFloating = false;
+        this._playerActualMovement.jump = false;
+        if(this._velocity.x !== 0) this.changeState(PlayerStates.RUNNING);
+        else this.changeState(PlayerStates.IDLING);
+    }
+
     // INPUT MANAGEMENT
     private manageInputRequests(time: number): void {
-        if(this._playerMovementRequest.left) {
-            if(!this._playerActualMovement.right && !this._playerActualMovement.left) {
+        if(this._playerMovementRequest.left && !this._playerMovementRequest.right) {
+            if(!this._playerActualMovement.left) {
                 console.log('Left Movement Handled');
-                if(this._playerState != PlayerStates.JUMPING)
-                    this.changeState(PlayerStates.RUNNING);
-                this.setHorizontalVelocity(time, -Player.RUNNING_HORIZONTAL_VELOCITY);
+                if(!this._isFloating) this.changeState(PlayerStates.RUNNING);
+                this.setVelocity(time, -Player.RUNNING_HORIZONTAL_VELOCITY, this._velocity.y);
                 this._playerActualMovement.left = true;
             }
             this._playerMovementRequest.left = false;
         }
         if(this._playerMovementRequest.right) {
-            if(!this._playerActualMovement.left && !this._playerActualMovement.right) {
+            if(!this._playerActualMovement.right) {
                 console.log('Right Movement Handled')
-                if(this._playerState != PlayerStates.JUMPING)
-                    this.changeState(PlayerStates.RUNNING);
-                this.setHorizontalVelocity(time, Player.RUNNING_HORIZONTAL_VELOCITY);
+                if(!this._isFloating) this.changeState(PlayerStates.RUNNING);
+                this.setVelocity(time, Player.RUNNING_HORIZONTAL_VELOCITY, this._velocity.y);
                 this._playerActualMovement.right = true;
             }
             this._playerMovementRequest.right = false;
@@ -126,7 +159,7 @@ export class Player extends FallingObject {
             console.log('Jump Movement Handled')
             if(!this._playerActualMovement.jump) {
                 this.changeState(PlayerStates.JUMPING);
-                this.setVerticalVelocity(time, -Player.RUNNING_VERTICAL_VELOCITY);
+                this.setVelocity(time, this._velocity.x, -Player.RUNNING_VERTICAL_VELOCITY);
                 this._playerActualMovement.jump = true;
                 this._isFloating = true;
             }
@@ -144,7 +177,7 @@ export class Player extends FallingObject {
         if(!this._playerActualMovement.jump && !this._playerActualMovement.shot &&
             !this._playerActualMovement.left && !this._playerActualMovement.right) {
             this.changeState(PlayerStates.IDLING);
-            this.setVelocity(time, Vec2.Zero());
+            this.setVelocity(time, 0, 0);
         }
     }
 

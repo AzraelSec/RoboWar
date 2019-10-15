@@ -1,20 +1,20 @@
 import { IDrawable } from './drawable';
-import { Resource } from './resourceLoader';
+import { Resource } from '../resourceLoader';
 
 export class Animation implements IDrawable{
-    private _spritesheet:Resource;
-    private _width:number;
-    private _height:number;
-    private _context:CanvasRenderingContext2D;
-    private _framesNumber:number;
-    private _tickCounter:number;
-    private _scaleFactor:number;
-    private _speedFactor:number;
+    protected _spritesheet: Resource;
+    protected _width: number;
+    protected _height: number;
+    protected _context: CanvasRenderingContext2D;
+    protected _framesNumber: number;
+    protected _tickCounter: number;
+    protected _scaleFactor: number;
+    protected _speedFactor: number;
 
-    constructor(context:CanvasRenderingContext2D, resource:Resource, width:number, framesNumber:number, scaleFactor?:number, speedFactor?:number) {
+    constructor(context: CanvasRenderingContext2D, resource: Resource, framesNumber: number, scaleFactor?: number, speedFactor?: number) {
         this._spritesheet = resource;
         this._height = resource.content.height;
-        this._width = width;
+        this._width = resource.content.width / framesNumber;
         this._context = context;
         this._framesNumber = framesNumber;
         this._tickCounter = 0; 
@@ -22,16 +22,14 @@ export class Animation implements IDrawable{
         this._speedFactor = speedFactor ? this.normSpeedFactor(speedFactor) : this._scaleFactor;
     }
 
-    public draw(x:number, y:number, inversion: boolean): void {
+    public draw(x: number, y: number, inversion: boolean): void {
         this._tickCounter = (this._tickCounter + this._speedFactor) % this._framesNumber;
         this._context.save();
         this._context.translate(
             x + 0.5 * this.width,
-            y - 0.5 * this.height
+            y + 0.5 * this.height
         );
-        if(inversion) {
-            this._context.scale(-1, 1);
-        }
+        if(inversion) this._context.scale(-1, 1);
         this._context.drawImage(
             this._spritesheet.content,
             Math.trunc(this._tickCounter) * this._width,

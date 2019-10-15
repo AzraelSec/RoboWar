@@ -1,5 +1,5 @@
-import { IDrawable } from './../graphics/drawable';
-import { GameObject } from './object';
+import { IDrawable } from '../graphics/representations/drawable';
+import { GameObject } from './gameObject';
 import { Vec2 } from './vec2';
 
 export class FallingObject extends GameObject {
@@ -8,7 +8,7 @@ export class FallingObject extends GameObject {
 
     constructor(initosition: Vec2, initVelocity: Vec2, representation: IDrawable, firstUpdate: number) {
         super(initosition, initVelocity, representation, firstUpdate);
-        this._isFloating = false;
+        this._isFloating = true;
     }
 
     public update(time: number): void {

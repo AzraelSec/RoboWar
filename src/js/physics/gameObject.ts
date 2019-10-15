@@ -1,12 +1,14 @@
-import { Vec2 } from './vec2';
-import { IDrawable } from '../graphics/drawable';
+import { Vec2, Axis } from './vec2';
+import { IDrawable } from '../graphics/representations/drawable';
 
 export interface IPhysical {
-    setVelocity(time:number, velocity:Vec2): void;
+    setVelocity(time:number, newX: number, newY: number): void;
     getVelocity():Vec2;
     getPosition(time:number):Vec2;
     update(time:number):void;
 }
+
+type PlayerCollisionCallback = () => void;
 
 export class GameObject implements IPhysical {
     public static FPS:number = 100;
@@ -15,43 +17,34 @@ export class GameObject implements IPhysical {
     protected _initPosition:Vec2;
     protected _actualPosition:Vec2;
     protected _velocity: Vec2;
-    private _image: IDrawable;
+    protected _image: IDrawable;
+    protected _playerCollisionCallback: PlayerCollisionCallback;
 
-    constructor(initPosition: Vec2, initVelocity: Vec2, representation: IDrawable, firstUpdate: number) {
+    constructor(initPosition: Vec2, initVelocity: Vec2, representation: IDrawable, firstUpdate: number, playerCollisionCallback?: PlayerCollisionCallback) {
         this._initPosition = initPosition;
         this._actualPosition = initPosition;
         this._velocity = initVelocity;
         this._image = representation;
         this._firstUpdate = firstUpdate;
+        this._playerCollisionCallback = playerCollisionCallback || (() => {});
     }
+
+    //Velocity Management
 
     public getVelocity(): Vec2 {
         return this._velocity;
     }
 
-    public setVelocity(time: number, v: Vec2): void {
-        if(!v.isEqual(this._velocity)) {
+    public setVelocity(time: number, nx: number, ny: number): void {
+        if(this._velocity.x !== nx || this._velocity.y !== ny) {
             this._initPosition = this._actualPosition;
             this._firstUpdate = time;
-            this._velocity = v;
+            this._velocity.x = nx;
+            this._velocity.y = ny;
         }
     }
 
-    public setHorizontalVelocity(time: number, vx: number) {
-        if(vx !== this._velocity.x) {
-            this._initPosition = this._actualPosition;
-            this._firstUpdate = time;
-            this._velocity.x = vx;
-        }
-    }
-    
-    public setVerticalVelocity(time: number, vy: number) {
-        if(vy !== this._velocity.y) {
-            this._initPosition = this._actualPosition;
-            this._firstUpdate = time;
-            this._velocity.y = vy;
-        }
-    }
+    //Game Logic Management
 
     public update(time: number): void {
         this._actualPosition = this.getPosition(time);
@@ -68,7 +61,17 @@ export class GameObject implements IPhysical {
         return new Vec2(px, py);
     }
     
+    //Representation Management
+
     protected changeRepresentation(newRepresentation: IDrawable): void {
         this._image = newRepresentation;
+    }
+
+    public get width() {
+        return this._image.width;
+    }
+
+    public get height() {
+        return this._image.height;
     }
 }
