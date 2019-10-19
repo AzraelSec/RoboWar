@@ -1,3 +1,5 @@
+import { Scene } from './game/scene';
+import { ButtonResource, Button } from './game/button';
 import { OneShotAnimation } from './graphics/representations/oneShotAnimation';
 import { PlayerStatesResources, Player } from './game/player';
 import { StaticSprite } from './graphics/representations/staticSprite';
@@ -9,11 +11,10 @@ import { Vec2 } from './physics/vec2';
 
 //Resource Targeting
 const RM = new ResourceManager([
-    'idle', 
-    'run',
+    'idle', 'run', 'jump',
     'background',
     'red_barrel',
-    'jump'
+    'play_button_1', 'play_button_2',
 ]);
 
 //Resource Prefetching
@@ -30,26 +31,28 @@ RM.resourcesPrefetch().then(() => {
         new OneShotAnimation(canvas.context, RM.getResource('jump'), 9)
     );
 
+    const buttonSprites = <ButtonResource> {
+        normal: new StaticSprite(canvas.context, RM.getResource('play_button_1')),
+        pressed: new StaticSprite(canvas.context, RM.getResource('play_button_2'))
+    };
+
     let player: Player = new Player(new Vec2(0, canvas.height - robotSprites.idling.height), robotSprites, lastUpdate, canvas.width, canvas.height);
     player.inputAttach(document);
 
-    let barrel = new GameObject(new Vec2(0, 0), Vec2.Zero(), new StaticSprite(canvas.context, RM.getResource('red_barrel')), lastUpdate)
+    let button = new Button(new Vec2(200, 200), buttonSprites, 0, () => alert('Button Pressed!'));
+    button.inputAttach(document);
 
     objects.push(player);
-    objects.push(barrel);
+    objects.push(button);
+
+    let testScene: Scene = new Scene(canvas, objects);
+
+    const testSer = JSON.stringify(testScene);
+    let copyScene: Scene = JSON.parse(testSer);
 
     requestAnimationFrame(step);
     function step(newTime) {
-        if(newTime - lastUpdate > (1000 / GameObject.FPS)) {
-            canvas.clear();
-            for(let i = 0; i < objects.length; i++)
-                objects[i].update(newTime);
-            canvas.context.save();
-            for(let i = 0; i < objects.length; i++)
-                objects[i].drawObject();
-            canvas.context.restore();
-            lastUpdate = newTime;
-        }
+        copyScene.play(newTime);
         requestAnimationFrame(step);
     }
 }).catch((e) => alert(`Error during resources prefetching: ${e}`));

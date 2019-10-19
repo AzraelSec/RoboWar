@@ -11,8 +11,6 @@ export interface IPhysical {
 type PlayerCollisionCallback = () => void;
 
 export class GameObject implements IPhysical {
-    public static FPS:number = 100;
-
     protected _firstUpdate:number;
     protected _initPosition:Vec2;
     protected _actualPosition:Vec2;
@@ -59,6 +57,13 @@ export class GameObject implements IPhysical {
         let px = this._initPosition.x + dt * this._velocity.x;
         let py = this._initPosition.y + dt * this._velocity.y;
         return new Vec2(px, py);
+    }
+
+    protected isIn(x: number, y: number): boolean {
+        return this._actualPosition.x < x  && 
+        x < this._actualPosition.x + this._image.width && 
+        this._actualPosition.y < y &&
+        y < this._actualPosition.y + this._image.height;
     }
     
     //Representation Management

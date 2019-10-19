@@ -87,9 +87,9 @@ export class Player extends FallingObject {
     }
 
     public update(time: number): void {
+        this.manageInputRequests(time);
         super.update(time);
         this.boundsAdjustPosition(time);
-        this.manageInputRequests(time);
     }
 
     private changeState(newState: PlayerStates): void {
