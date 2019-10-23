@@ -25,22 +25,22 @@ export class TextControl extends Control {
     
     public drawControl(): void {
         this._context.save();
-        this.balanceTextSize();
-        this._context.rect(this._position.x, this._position.y, this._width, this._height);
-        this._context.fillStyle = this._fontColor;
-        this._context.textAlign = this._align;
-        if(this._background !== null)
+        if(this._background !== null) {
             if(this._background instanceof HTMLImageElement)
-                this._context.drawImage(this._background, this._position.x, this._position.y, this.width, this.height);
-            else
+            this._context.drawImage(this._background, this._position.x, this._position.y, this.width, this.height);
+            else {
+                this.context.fillStyle = this._background;
                 this._context.fillRect(this._position.x, this._position.y, this.width, this.height);
+            }
+        }
+        this.adjustEveryThing();
         this._context.fillText(this._text, this._position.x + this.width * 0.5, this._position.y + this.height * 0.5);
-        this._context.clip();
         this._context.restore();
     }
-
+    
     public changeText(text: string): void {
         this._text = text;
+        this.balanceTextSize();
     }
 
     public get align(): CanvasTextAlign {
@@ -69,8 +69,15 @@ export class TextControl extends Control {
             this._context.font = `${textSize}pt ${this._font}`;
             measuredWidth = this._context.measureText(this._text).width;
         }
-        console.log(`Text size: ${textSize}`);
-        this._fontSize = textSize - 1;
+
+        this._fontSize = textSize - 10;
+        this._context.font = `${this._fontSize}pt ${this._font}`;
+    }
+
+    private adjustEveryThing(): void {
+        this._context.fillStyle = this._fontColor;
+        this._context.textAlign = this._align;
+        this._context.textBaseline = "middle";
         this._context.font = `${this._fontSize}pt ${this._font}`;
     }
 }

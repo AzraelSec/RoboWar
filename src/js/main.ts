@@ -18,6 +18,7 @@ const resourceManager = new ResourceManager([
     'background', 'menu_background',
     'red_barrel',
     'gui/play_button_1', 'gui/play_button_2', 'gui/start_button',
+    'gui/time_background'
 ]);
 
 //Resource Prefetching

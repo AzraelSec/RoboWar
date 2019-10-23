@@ -1,3 +1,4 @@
+import { StaticSprite } from './../../graphics/representations/staticSprite';
 import { TextControl } from './../../graphics/controls/textBox';
 import { ContainerControl } from './../../graphics/controls/container';
 import { Player } from './../player';
@@ -12,6 +13,8 @@ import { OneShotAnimation } from '../../graphics/representations/oneShotAnimatio
 
 export class PlayScene extends Scene {
     protected timeText: TextControl;
+    protected lifeCountText: TextControl;
+    protected lifeCount: number;
 
     constructor(document: Document, canvas: Canvas, resourceManager: ResourceManager, sceneManager: SceneManager) {
         const robotSprites = new PlayerStatesResources(
@@ -22,18 +25,23 @@ export class PlayScene extends Scene {
 
         const player: Player = new Player(new Vec2(0, canvas.height - robotSprites.idling.height), robotSprites, 0, canvas.width, canvas.height);
         
-        let timeText = new TextControl(canvas.context, new Vec2(0, 0), 300, 30, `Time: 0`);
+        let timeText = new TextControl(canvas.context, new Vec2(0, 5), 300, 70, `Time: 0`, resourceManager.getDrawable('time_background'));
+        let lifeCountText = new TextControl(canvas.context, new Vec2(300, 5), 300, 70, `Lifes: 5`, resourceManager.getDrawable('time_background'));
 
         super(document, canvas, resourceManager.getDrawable('menu_background'), [ 
             player,
             timeText,
+            lifeCountText
          ]);
 
          this.timeText = timeText;
+         this.lifeCountText = lifeCountText;
+         this.lifeCount = 5;
     }
 
     public play(newTime: number): void {
         super.play(newTime);
         this.timeText.changeText(`Time: ${Math.trunc((newTime - this._fistUpdate) / 1000)}`);
+        this.lifeCountText.changeText('Lifes: 5');
     }
 }

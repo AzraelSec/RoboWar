@@ -13,13 +13,11 @@ import { DrawableControl } from '../../graphics/controls/control';
 export class StartScene extends Scene {
     constructor(document: Document, canvas: Canvas, resourceManager: ResourceManager, sceneManager: SceneManager) {
         let button_normal = resourceManager.getResource('start_button');
-        //let button_pressed = resourceManager.getResource('play_button_2');
 
         let sprite_normal = new StaticSprite(canvas.context, button_normal);
-        //let sprite_pressed = new StaticSprite(canvas.context, button_pressed);
 
-        let textboxWidth = 1000;
-        let textboxHeight = 2000;
+        let textboxWidth = 500;
+        let textboxHeight = 400;
 
         let robot_resource = resourceManager.getResource('idle');
         let spriteRobot = new Animation(canvas.context, robot_resource, 9, 1.2, 0.4);
