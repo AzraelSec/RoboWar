@@ -1,9 +1,9 @@
-import { InputHandler, InputHandlerTrack } from './../inputHandler';
+import { InputHandlerTrack } from './../inputHandler';
 import { Background } from './../../graphics/canvas';
 import { Control } from '../../graphics/controls/control';
 import { Canvas } from '../../graphics/canvas';
 import { World } from '../world';
-import { Obstacle } from '../Obstacles/obstacle';
+import { Obstacle } from '../obstacles/obstacle';
 import { Player } from '../player';
 import { Shot } from '../shot';
 import { GameObject } from '../../physics/gameObject';
@@ -22,7 +22,7 @@ export class Scene {
     protected _background: Background;
     protected _eventsListeners: InputHandlerTrack[];
 
-    constructor(document: Document, canvas: Canvas, background: Background, entities?: GameObject[] | Control[]) {
+    constructor(document: Document, canvas: Canvas, background: Background, entities?: (GameObject | Control)[]) {
         this._objects = [];
         this._controls = [];
 

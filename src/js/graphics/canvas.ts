@@ -1,4 +1,4 @@
-export type Background = string | CanvasGradient | CanvasPattern;
+export type Background = string | CanvasGradient | CanvasPattern | HTMLImageElement;
 
 export class Canvas {
     private static NCOL:number = 20;
@@ -19,9 +19,13 @@ export class Canvas {
 
     public clear(color: Background) {
         this._context.save();
-        this._context.fillStyle = color;
-        this._context.scale(0.5, 0.5);
-        this._context.fillRect(0, 0, this._canvas.width * 2, this._canvas.height * 2);
+        if(!(color instanceof HTMLImageElement)) {
+            this._context.fillStyle = color;
+            //this._context.scale(0.5, 0.5);
+            this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
+        }
+        else
+            this._context.drawImage(color, 0, 0, this._canvas.width, this._canvas.height);
         this._context.restore();
     }
 

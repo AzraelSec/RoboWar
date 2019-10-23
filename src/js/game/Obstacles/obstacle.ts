@@ -1,6 +1,6 @@
-import { StaticSprite } from './../../graphics/representations/staticSprite';
-import { Vec2 } from './../../physics/vec2';
-import { GameObject } from './../../physics/gameObject';
+import { StaticSprite } from '../../graphics/representations/staticSprite';
+import { Vec2 } from '../../physics/vec2';
+import { GameObject } from '../../physics/gameObject';
 
 export class Obstacle extends GameObject {
     protected _deadly: boolean;

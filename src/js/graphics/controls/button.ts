@@ -12,7 +12,7 @@ export interface ButtonResource {
     pressed: StaticSprite;
 }
 
-export class Button extends DrawableControl {
+export class TwoWayButton extends DrawableControl {
     protected _buttonResource: ButtonResource;
     protected _state: ButtonState;
     protected _action: () => void;
@@ -24,14 +24,14 @@ export class Button extends DrawableControl {
         this._state = ButtonState.normal;
     }
 
-    private buttonDownHandling(event: MouseEvent): void {
+    protected buttonDownHandling(event: MouseEvent): void {
         if(this.isIn(event.clientX, event.clientY) && this._state === ButtonState.normal) {
             this.changeRepresentation(this._buttonResource.pressed);
             this._state = ButtonState.pressed;
         }
     }
 
-    private buttonUpHandling(event: MouseEvent): void {
+    protected buttonUpHandling(event: MouseEvent): void {
         if(this._state === ButtonState.pressed) {
             this.changeRepresentation(this._buttonResource.normal);
             this._state = ButtonState.normal;
@@ -49,5 +49,27 @@ export class Button extends DrawableControl {
             documentReference.addEventListener(references[i].type, references[i].callback);
         
         return references;
+    }
+}
+
+export class OneWayButton extends TwoWayButton {
+    constructor(position: Vec2, representation: StaticSprite, action: () => void) {
+        super(position,
+            <ButtonResource> {
+                normal: representation,
+                pressed: representation}
+            , action);
+    }
+
+    protected buttonDownHandling(event: MouseEvent): void {
+        if(this.isIn(event.clientX, event.clientY) && this._state === ButtonState.normal)
+            this._state = ButtonState.pressed;
+    }
+
+    protected buttonUpHandling(event: MouseEvent): void {
+        if(this._state === ButtonState.pressed) {
+            this._state = ButtonState.normal;
+            if(this.isIn(event.clientX, event.clientY)) this._action();
+        }
     }
 }

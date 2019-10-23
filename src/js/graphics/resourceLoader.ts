@@ -41,7 +41,8 @@ export class ResourceManager {
             const img = new Image();
             img.addEventListener('load', (e) => {
                 console.debug(`Resource ${resource} loaded from ${path}`);
-                resolve({id: resource, content: img} as Resource);
+                const pathPool = resource.split('/');
+                resolve({id: pathPool[pathPool.length - 1], content: img} as Resource);
             })
             img.addEventListener('error', (error) => {
                 console.log(`Error loading resource ${resource} from ${path}`);
