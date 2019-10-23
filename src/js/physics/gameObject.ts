@@ -1,4 +1,5 @@
-import { Vec2, Axis } from './vec2';
+import { InputHandler, InputHandlerTrack } from './../game/inputHandler';
+import { Vec2 } from './vec2';
 import { IDrawable } from '../graphics/representations/drawable';
 
 export interface IPhysical {
@@ -10,13 +11,14 @@ export interface IPhysical {
 
 type PlayerCollisionCallback = () => void;
 
-export class GameObject implements IPhysical {
+export class GameObject implements IPhysical, InputHandler {
     protected _firstUpdate:number;
     protected _initPosition:Vec2;
     protected _actualPosition:Vec2;
     protected _velocity: Vec2;
     protected _image: IDrawable;
     protected _playerCollisionCallback: PlayerCollisionCallback;
+    protected _inputHandlers: InputHandlerTrack[];
 
     constructor(initPosition: Vec2, initVelocity: Vec2, representation: IDrawable, firstUpdate: number, playerCollisionCallback?: PlayerCollisionCallback) {
         this._initPosition = initPosition;
@@ -25,6 +27,7 @@ export class GameObject implements IPhysical {
         this._image = representation;
         this._firstUpdate = firstUpdate;
         this._playerCollisionCallback = playerCollisionCallback || (() => {});
+        this._inputHandlers = [];
     }
 
     //Velocity Management
@@ -78,5 +81,9 @@ export class GameObject implements IPhysical {
 
     public get height() {
         return this._image.height;
+    }
+
+    public inputAttach(documentReference: Document): InputHandlerTrack[] {
+        return [];
     }
 }

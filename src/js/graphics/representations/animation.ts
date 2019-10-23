@@ -62,4 +62,12 @@ export class Animation implements IDrawable{
     public reset(): void {
         this._tickCounter = 0;
     }
+
+    public get context(): CanvasRenderingContext2D {
+        return this._context;
+    }
+
+    public set context(context: CanvasRenderingContext2D) {
+        this._context = context;
+    }
 }

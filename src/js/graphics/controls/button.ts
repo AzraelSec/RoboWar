@@ -1,6 +1,7 @@
-import { StaticSprite } from './../graphics/representations/staticSprite';
-import { GameObject } from './../physics/gameObject';
-import { Vec2 } from '../physics/vec2';
+import { InputHandlerTrack } from './../../game/inputHandler';
+import { DrawableControl } from './control';
+import { StaticSprite } from '../representations/staticSprite';
+import { Vec2 } from '../../physics/vec2';
 
 enum ButtonState {
     normal, pressed
@@ -11,13 +12,13 @@ export interface ButtonResource {
     pressed: StaticSprite;
 }
 
-export class Button extends GameObject {
+export class Button extends DrawableControl {
     protected _buttonResource: ButtonResource;
     protected _state: ButtonState;
     protected _action: () => void;
     
-    constructor(position: Vec2, representation: ButtonResource, firstUpdate: number, action: () => void) {
-        super(position, Vec2.Zero(), representation.normal, firstUpdate);
+    constructor(position: Vec2, representation: ButtonResource, action: () => void) {
+        super(position, representation.normal);
         this._buttonResource = representation;
         this._action = action;
         this._state = ButtonState.normal;
@@ -38,8 +39,15 @@ export class Button extends GameObject {
         }
     }
 
-    public inputAttach(document: Document): void {
-        document.addEventListener('mousedown', this.buttonDownHandling.bind(this));
-        document.addEventListener('mouseup', this.buttonUpHandling.bind(this));
+    public inputAttach(documentReference: Document): InputHandlerTrack[] {    
+        const references: InputHandlerTrack[] = [
+            { type: 'mousedown', callback: this.buttonDownHandling.bind(this) },
+            { type: 'mouseup', callback: this.buttonUpHandling.bind(this) }
+        ];
+        
+        for(let i = 0; i < references.length; i++)
+            documentReference.addEventListener(references[i].type, references[i].callback);
+        
+        return references;
     }
 }

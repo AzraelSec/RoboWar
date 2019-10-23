@@ -1,3 +1,4 @@
+import { InputHandler, InputHandlerTrack } from './inputHandler';
 import { FallingObject } from './../physics/fallingObject';
 import { Animation } from '../graphics/representations/animation';
 import { Vec2, Axis } from '../physics/vec2';
@@ -87,8 +88,8 @@ export class Player extends FallingObject {
     }
 
     public update(time: number): void {
-        this.manageInputRequests(time);
         super.update(time);
+        this.manageInputRequests(time);
         this.boundsAdjustPosition(time);
     }
 
@@ -176,27 +177,37 @@ export class Player extends FallingObject {
 
         if(!this._playerActualMovement.jump && !this._playerActualMovement.shot &&
             !this._playerActualMovement.left && !this._playerActualMovement.right) {
-            this.changeState(PlayerStates.IDLING);
-            this.setVelocity(time, 0, 0);
+                this.setVelocity(time, 0, this._velocity.y);
+            this.changeState(this._isFloating ? PlayerStates.JUMPING : PlayerStates.IDLING);
         }
     }
 
-    public inputAttach(documentReference: Document): void {
-        documentReference.addEventListener('keydown', (event) => {
-            switch(event.keyCode) {
-                case MovementKeys.RIGHT: this._playerMovementRequest.right = true; break;
-                case MovementKeys.LEFT: this._playerMovementRequest.left = true; break;
-                case MovementKeys.JUMP: this._playerMovementRequest.jump = true; break;
-                case MovementKeys.SHOT: this._playerMovementRequest.shot = true; break;
-            }
-        });
-        documentReference.addEventListener('keyup', (event) => {
-            if(event.keyCode === MovementKeys.LEFT)
-                this._playerActualMovement.left = this._playerMovementRequest.left = false;
-            else if(event.keyCode === MovementKeys.RIGHT)
-                this._playerActualMovement.right = this._playerMovementRequest.right = false;
-            else if(event.keyCode === MovementKeys.SHOT)
-                this._playerActualMovement.shot = false;
-        });
+    public inputAttach(documentReference: Document): InputHandlerTrack[] {
+        const references: InputHandlerTrack[] = [
+            { type: 'keydown', callback: this.keyDownHandling.bind(this) },
+            { type: 'keyup', callback: this.keyUpHandling.bind(this) }
+        ];
+        
+        for(let i = 0; i < references.length; i++)
+            documentReference.addEventListener(references[i].type, references[i].callback);
+        
+        return references;
+    }
+
+    private keyDownHandling(event: KeyboardEvent): void {
+        switch(event.keyCode) {
+            case MovementKeys.RIGHT: this._playerMovementRequest.right = true; break;
+            case MovementKeys.LEFT: this._playerMovementRequest.left = true; break;
+            case MovementKeys.JUMP: this._playerMovementRequest.jump = true; break;
+            case MovementKeys.SHOT: this._playerMovementRequest.shot = true; break;
+        }
+    }
+
+    private keyUpHandling(event: KeyboardEvent): void {
+        switch(event.keyCode) {
+            case MovementKeys.LEFT: this._playerActualMovement.left = this._playerMovementRequest.left = false; break;
+            case MovementKeys.RIGHT: this._playerActualMovement.right = this._playerMovementRequest.right = false; break;
+            case MovementKeys.SHOT: this._playerActualMovement.shot = false; break;
+        }
     }
 }

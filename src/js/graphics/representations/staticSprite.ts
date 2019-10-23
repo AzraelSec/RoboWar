@@ -43,4 +43,12 @@ export class StaticSprite implements IDrawable {
     public get height(): number {
         return this._height * this._scaleFactor;
     }
+
+    public get context(): CanvasRenderingContext2D {
+        return this._context;
+    }
+
+    public set context(context: CanvasRenderingContext2D) {
+        this._context = context;
+    }
 }

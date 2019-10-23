@@ -1,9 +1,10 @@
-import { Scene } from './game/scene';
-import { ButtonResource, Button } from './game/button';
+import { TextControl } from './graphics/controls/textBox';
+import { SceneManager, SceneFrame } from './game/scene/sceneManager';
+import { Scene, } from './game/scene/scene';
+import { ButtonResource, Button } from './graphics/controls/button';
 import { OneShotAnimation } from './graphics/representations/oneShotAnimation';
 import { PlayerStatesResources, Player } from './game/player';
 import { StaticSprite } from './graphics/representations/staticSprite';
-import { GameObject } from './physics/gameObject';
 import { Animation } from './graphics/representations/animation';
 import { ResourceManager } from './graphics/resourceLoader';
 import { Canvas } from './graphics/canvas'
@@ -21,9 +22,8 @@ const RM = new ResourceManager([
 RM.resourcesPrefetch().then(() => {
     console.log('Resource loaded');
     
-    const canvas = new Canvas('scene', RM.getResource('background'));
-    let lastUpdate = 0;
-    const objects: GameObject[] = [];
+    const canvas = new Canvas('scene');
+    let sm = new SceneManager();
 
     const robotSprites = new PlayerStatesResources(
         new Animation(canvas.context, RM.getResource('run'), 9),
@@ -36,23 +36,23 @@ RM.resourcesPrefetch().then(() => {
         pressed: new StaticSprite(canvas.context, RM.getResource('play_button_2'))
     };
 
-    let player: Player = new Player(new Vec2(0, canvas.height - robotSprites.idling.height), robotSprites, lastUpdate, canvas.width, canvas.height);
-    player.inputAttach(document);
+    let player: Player = new Player(new Vec2(200, 200)/*new Vec2(0, canvas.height - robotSprites.idling.height)*/, robotSprites, 0, canvas.width, canvas.height);
 
-    let button = new Button(new Vec2(200, 200), buttonSprites, 0, () => alert('Button Pressed!'));
-    button.inputAttach(document);
+    let button = new Button(new Vec2(200, 200), buttonSprites, () => {
+        sm.setScene('play');
+    });
 
-    objects.push(player);
-    objects.push(button);
+    let text = new TextControl(canvas.context, new Vec2(0, 0), 500, 150, 'PRovaaaaaa');
 
-    let testScene: Scene = new Scene(canvas, objects);
+    let menu: Scene = new Scene(document, canvas, '#469969' , [button, text])
+    let gameScene: Scene = new Scene(document, canvas, '#202d42', [player]);
 
-    const testSer = JSON.stringify(testScene);
-    let copyScene: Scene = JSON.parse(testSer);
+    sm.addScene(<SceneFrame> { 
+        name: 'menu', scene: menu
+    }).addScene(<SceneFrame> {
+        name: 'play', scene: gameScene
+    });
 
-    requestAnimationFrame(step);
-    function step(newTime) {
-        copyScene.play(newTime);
-        requestAnimationFrame(step);
-    }
+    sm.setScene('menu');
+    sm.start();
 }).catch((e) => alert(`Error during resources prefetching: ${e}`));
