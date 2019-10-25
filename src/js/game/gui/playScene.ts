@@ -1,3 +1,4 @@
+import { Block } from './../obstacles/block';
 import { StaticSprite } from './../../graphics/representations/staticSprite';
 import { TextControl } from './../../graphics/controls/textBox';
 import { ContainerControl } from './../../graphics/controls/container';
@@ -24,14 +25,18 @@ export class PlayScene extends Scene {
         );
 
         const player: Player = new Player(new Vec2(0, canvas.height - robotSprites.idling.height), robotSprites, 0, canvas.width, canvas.height);
+
+        const blockSprite = new StaticSprite(canvas.context, resourceManager.getResource('block'), 0.4);
         
         let timeText = new TextControl(canvas.context, new Vec2(0, 5), 300, 70, `Time: 0`, resourceManager.getDrawable('time_background'));
         let lifeCountText = new TextControl(canvas.context, new Vec2(300, 5), 300, 70, `Lifes: 5`, resourceManager.getDrawable('time_background'));
+        let block = new Block(new Vec2(400, canvas.height - blockSprite.height - 300), blockSprite, 0);
 
         super(document, canvas, resourceManager.getDrawable('menu_background'), [ 
             player,
             timeText,
-            lifeCountText
+            lifeCountText,
+            block
          ]);
 
          this.timeText = timeText;

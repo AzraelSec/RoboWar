@@ -1,15 +1,8 @@
 import { PlayScene } from './game/gui/playScene';
-import { TextControl } from './graphics/controls/textBox';
 import { SceneManager, SceneFrame } from './game/scene/sceneManager';
 import { Scene, } from './game/scene/scene';
-import { ButtonResource, TwoWayButton } from './graphics/controls/button';
-import { OneShotAnimation } from './graphics/representations/oneShotAnimation';
-import { PlayerStatesResources, Player } from './game/player';
-import { StaticSprite } from './graphics/representations/staticSprite';
-import { Animation } from './graphics/representations/animation';
 import { ResourceManager } from './graphics/resourceLoader';
 import { Canvas } from './graphics/canvas'
-import { Vec2 } from './physics/vec2';
 import { StartScene } from './game/gui/startScene';
 
 //Resource Targeting
@@ -18,7 +11,7 @@ const resourceManager = new ResourceManager([
     'background', 'menu_background',
     'red_barrel',
     'gui/play_button_1', 'gui/play_button_2', 'gui/start_button',
-    'gui/time_background'
+    'gui/time_background', 'block'
 ]);
 
 //Resource Prefetching

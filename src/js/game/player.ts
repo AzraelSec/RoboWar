@@ -1,7 +1,11 @@
+import { Obstacle } from './obstacles/obstacle';
 import { InputHandler, InputHandlerTrack } from './inputHandler';
 import { FallingObject } from './../physics/fallingObject';
 import { Animation } from '../graphics/representations/animation';
 import { Vec2, Axis } from '../physics/vec2';
+import { CollisionSide } from '../physics/gameObject';
+
+
 
 enum MovementKeys {
     LEFT = 37,
@@ -87,10 +91,10 @@ export class Player extends FallingObject {
         }
     }
 
-    public update(time: number): void {
+    public update(time: number, colliding?: Obstacle[]): void {
         super.update(time);
         this.manageInputRequests(time);
-        this.boundsAdjustPosition(time);
+        this.boundsAdjustPosition(time, colliding);
     }
 
     private changeState(newState: PlayerStates): void {
@@ -108,24 +112,52 @@ export class Player extends FallingObject {
     }
 
     // BOUNDS COLLISION HANDLING
+    private boundsAdjustPosition(time: number, colliding?: Obstacle[]): void {
+        let leftBounce = (x: number) => {
+            this._actualPosition.x = x;
+            this.setVelocity(time, 0, 0);
+        };
 
-    private boundsAdjustPosition(time: number): void {
-        if(this._actualPosition.x < 0) {
-            this._actualPosition.x = 0;
+        let rightBounce = (max: number) => {
+            this._actualPosition.x = max - this.width;
             this.setVelocity(time, 0, 0);
-        }
-        if(this._actualPosition.y < 0) {
-            this._actualPosition.y = 0;
+        };
+
+        let topBounce = (y: number) => {
+            this._actualPosition.y = y;
             this.setVelocity(time, this._velocity.x, 0);
-        }
-        if(this._actualPosition.x + this.width > this._worldBounds.width) {
-            this._actualPosition.x = this._worldBounds.width - this.width;
-            this.setVelocity(time, 0, 0);
-        }
-        if(this._actualPosition.y + this.height > this._worldBounds.height) {
-            this._actualPosition.y = this._worldBounds.height - this.height;
+        };
+
+        let bottomBounce = (max: number) => {
+            this._actualPosition.y = max - this.height;
             this.setVelocity(time, this._velocity.x, 0);
             this.bottomBoundsHitHandling();
+        }
+
+        if(this._actualPosition.x < 0) leftBounce(0);
+        if(this._actualPosition.y < 0) topBounce(0);
+        if(this._actualPosition.x + this.width > this._worldBounds.width) rightBounce(this._worldBounds.width);
+        if(this._actualPosition.y + this.height > this._worldBounds.height) bottomBounce(this._worldBounds.height);
+    
+        if(colliding && colliding.length > 0) {
+            for(let i = 0; i < colliding.length; i++) {
+                let collidingSide: CollisionSide = this.collisionSideDetection(colliding[i]);
+                if(collidingSide === CollisionSide.TOP) {
+                    console.log(`collision top`)
+                    topBounce(colliding[i]._actualPosition.y - colliding[i].height);
+                } else if(collidingSide === CollisionSide.BOTTOM) {
+                    //NO
+                    console.log(`collision bottom`)
+                    bottomBounce(colliding[i]._actualPosition.y);
+                } else if(collidingSide === CollisionSide.RIGHT) {
+                    console.log(`collision right`)
+                    rightBounce(colliding[i]._actualPosition.x); 
+                } else if(collidingSide === CollisionSide.LEFT) {
+                    //NO
+                    console.log(`collision left`)
+                    leftBounce(colliding[i]._actualPosition.x + colliding[i].width);
+                }
+            }
         }
     }
 

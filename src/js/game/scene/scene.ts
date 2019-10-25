@@ -12,7 +12,7 @@ export class Scene {
     protected _objects: GameObject[];
     protected _shots: Shot[];
     protected _player: Player;
-    protected _enemies: Obstacle[];
+    protected _obstacles: Obstacle[];
     protected _controls: Control[];
 
     protected _lastUpdate: number;
@@ -27,7 +27,7 @@ export class Scene {
         this._controls = [];
 
         this._player = null;
-        this._enemies = [];
+        this._obstacles = [];
         this._lastUpdate = 0;
         this._fistUpdate = null;
         this._canvas = canvas;
@@ -44,7 +44,7 @@ export class Scene {
 
         if(object instanceof Shot) this._shots.push(object);
         else if(object instanceof Player) this._player = object;
-        else if(object instanceof Obstacle) this._enemies.push(object);
+        else if(object instanceof Obstacle) this._obstacles.push(object);
     }
 
     public play(newTime: number): void {
@@ -53,7 +53,10 @@ export class Scene {
         if(newTime - this._lastUpdate > (1000 / World.FPS)) {
             this._canvas.clear(this._background);
             for(let i = 0; i < this._objects.length; i++)
-                this._objects[i].update(newTime);
+                if(this._objects[i] instanceof Player)
+                    (<Player>this._objects[i]).update(newTime, this.getCollisions())
+                else
+                    this._objects[i].update(newTime);
             this._canvas.context.save();
             for(let i = 0; i < this._objects.length; i++)
                 this._objects[i].drawObject();
@@ -74,6 +77,15 @@ export class Scene {
     public finalize(): void {
         for(let i = 0; i < this._eventsListeners.length; i++)
             this._document.removeEventListener(this._eventsListeners[i].type, this._eventsListeners[i].callback);
+    }
+
+    private getCollisions(): Obstacle[]{
+        const colliding: Obstacle[] = [];
+        if(this._player)
+            for(let i = 0; i < this._obstacles.length; i++)
+                if(this._player.isColliding(this._obstacles[i])) 
+                    colliding.push(this._obstacles[i]);
+        return colliding;
     }
 
 }
