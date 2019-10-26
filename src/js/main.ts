@@ -7,7 +7,7 @@ import { StartScene } from './game/gui/startScene';
 
 //Resource Targeting
 const resourceManager = new ResourceManager([
-    'player/idle', 'player/run', 'player/jump',
+    'player/idle', 'player/run', 'player/jump', 'shot',
     'background', 'menu_background',
     'red_barrel',
     'gui/play_button_1', 'gui/play_button_2', 'gui/start_button',
@@ -30,6 +30,6 @@ resourceManager.resourcesPrefetch().then(() => {
         name: 'play', scene: gameScene
     });
 
-    sceneManager.setScene('start');
+    sceneManager.setScene('play');
     sceneManager.start();
 }).catch((e: Error) => alert(`Error during resources prefetching: ${e.stack}`));

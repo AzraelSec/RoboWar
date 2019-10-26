@@ -1,3 +1,4 @@
+import { CollisionScaffold, GameObject, Direction } from './../../physics/gameObject';
 import { InputHandlerTrack } from './../inputHandler';
 import { Background } from './../../graphics/canvas';
 import { Control } from '../../graphics/controls/control';
@@ -6,7 +7,6 @@ import { World } from '../world';
 import { Obstacle } from '../obstacles/obstacle';
 import { Player } from '../player';
 import { Shot } from '../shot';
-import { GameObject } from '../../physics/gameObject';
 
 export class Scene {
     protected _objects: GameObject[];
@@ -28,6 +28,7 @@ export class Scene {
 
         this._player = null;
         this._obstacles = [];
+        this._shots = [];
         this._lastUpdate = 0;
         this._fistUpdate = null;
         this._canvas = canvas;
@@ -53,16 +54,18 @@ export class Scene {
         if(newTime - this._lastUpdate > (1000 / World.FPS)) {
             //Game objects position updating
             for(let i = 0; i < this._objects.length; i++)
-            if(!(this._objects[i] instanceof Player))
-            this._objects[i].update(newTime);
+                if(!(this._objects[i] instanceof Player))
+                    this._objects[i].update(newTime);
+
             //Player updating
             if(this._player)
-            this._player.update(newTime, this._obstacles);
+                this._player.update(newTime, this.getCollisions(newTime, this._player));
+                
             //Drawing the objects
             this._canvas.clear(this._background);
             this._canvas.context.save();
             for(let i = 0; i < this._objects.length; i++)
-                this._objects[i].drawObject();
+                this._objects[i].drawObject(newTime);
             for(let i = 0; i < this._controls.length; i++)
                 this._controls[i].drawControl();
             this._canvas.context.restore();
@@ -82,12 +85,19 @@ export class Scene {
             this._document.removeEventListener(this._eventsListeners[i].type, this._eventsListeners[i].callback);
     }
 
-    private getCollisions(): Obstacle[]{
-        const colliding: Obstacle[] = [];
-        if(this._player)
-            for(let i = 0; i < this._obstacles.length; i++)
-                if(this._player.isColliding(this._obstacles[i])) 
-                    colliding.push(this._obstacles[i]);
+    private getCollisions(time: number, object: GameObject): CollisionScaffold[] {
+        const colliding: CollisionScaffold[] = [];
+        if(object) {
+            for(let obj of this._objects)
+                if(object !== obj) {
+                    let direction: Direction = object.isColliding(time, obj);
+                    if(direction !== null)
+                        colliding.push(<CollisionScaffold> {
+                            collider: obj,
+                            side: direction
+                        });
+                }
+        }
         return colliding;
     }
 
