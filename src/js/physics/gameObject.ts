@@ -98,29 +98,10 @@ export class GameObject implements IPhysical, InputHandler {
     }
 
     //Collision Detection
-
     public isColliding(object: GameObject): boolean {
-        return this._actualPosition.x < object._actualPosition.x &&
+        return this._actualPosition.x < object._actualPosition.x + object.width &&
             this._actualPosition.x + this.width > object._actualPosition.x &&
             this._actualPosition.y < object._actualPosition.y + object.height &&
             this._actualPosition.y + this.height > object._actualPosition.y;
-    }
-      
-    public collisionSideDetection(object: Obstacle): CollisionSide {
-        let w = (this.width + object.width) * 0.5;
-        let h = (this.height + object.height) * 0.5;
-        let dx: number = (this._actualPosition.x + this.width * 0.5) - (object._actualPosition.x + object.width * 0.5);
-        let dy: number = (this._actualPosition.y + this.height * 0.5) - (object._actualPosition.y + object.height * 0.5);
-        let crossw = w * dy;
-        let crossh = h * dx;
-        let collision = null;
-
-        if(Math.abs(dx) <= w && Math.abs(dy) <= h) {
-            if(crossw > crossh)
-                collision = ( crossw > -crossh ) ? CollisionSide.TOP : CollisionSide.LEFT;
-            else
-                collision = ( crossw > -(crossh) ) ? CollisionSide.RIGHT : CollisionSide.BOTTOM;
-        }
-        return collision;
     }
 }

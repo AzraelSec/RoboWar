@@ -92,9 +92,15 @@ export class Player extends FallingObject {
     }
 
     public update(time: number, colliding?: Obstacle[]): void {
+        let oldX = this._actualPosition.x;
+        let oldY = this._actualPosition.y;
         super.update(time);
+        if(this.boundsAdjustPosition(time, colliding)) {
+            this.setVelocity(time, 0, 0);
+            this._actualPosition.x = oldX;
+            this._actualPosition.y = oldY;
+        }
         this.manageInputRequests(time);
-        this.boundsAdjustPosition(time, colliding);
     }
 
     private changeState(newState: PlayerStates): void {
@@ -112,12 +118,13 @@ export class Player extends FallingObject {
     }
 
     // BOUNDS COLLISION HANDLING
-    private boundsAdjustPosition(time: number, colliding?: Obstacle[]): void {
+    private boundsAdjustPosition(time: number, colliding?: Obstacle[]): boolean {
+        
         let leftBounce = (x: number) => {
             this._actualPosition.x = x;
             this.setVelocity(time, 0, 0);
         };
-
+        
         let rightBounce = (max: number) => {
             this._actualPosition.x = max - this.width;
             this.setVelocity(time, 0, 0);
@@ -135,10 +142,18 @@ export class Player extends FallingObject {
         }
 
         if(this._actualPosition.x < 0) leftBounce(0);
-        if(this._actualPosition.y < 0) topBounce(0);
-        if(this._actualPosition.x + this.width > this._worldBounds.width) rightBounce(this._worldBounds.width);
-        if(this._actualPosition.y + this.height > this._worldBounds.height) bottomBounce(this._worldBounds.height);
-    
+        else if(this._actualPosition.y < 0) topBounce(0);
+        else if(this._actualPosition.x + this.width > this._worldBounds.width) rightBounce(this._worldBounds.width);
+        else if(this._actualPosition.y + this.height > this._worldBounds.height) bottomBounce(this._worldBounds.height);
+        else {
+            for(let i = 0; i < colliding.length; i++)
+                if(this.isColliding(colliding[i])) {
+                    return true;
+                }
+                else return false;
+        }
+        return false;
+        /*
         if(colliding && colliding.length > 0) {
             for(let i = 0; i < colliding.length; i++) {
                 let collidingSide: CollisionSide = this.collisionSideDetection(colliding[i]);
@@ -159,6 +174,7 @@ export class Player extends FallingObject {
                 }
             }
         }
+        */
     }
 
     private bottomBoundsHitHandling(): void {

@@ -51,12 +51,15 @@ export class Scene {
         if(this._fistUpdate === null) this._fistUpdate = newTime;
         newTime = newTime - this._fistUpdate;
         if(newTime - this._lastUpdate > (1000 / World.FPS)) {
-            this._canvas.clear(this._background);
+            //Game objects position updating
             for(let i = 0; i < this._objects.length; i++)
-                if(this._objects[i] instanceof Player)
-                    (<Player>this._objects[i]).update(newTime, this.getCollisions())
-                else
-                    this._objects[i].update(newTime);
+            if(!(this._objects[i] instanceof Player))
+            this._objects[i].update(newTime);
+            //Player updating
+            if(this._player)
+            this._player.update(newTime, this._obstacles);
+            //Drawing the objects
+            this._canvas.clear(this._background);
             this._canvas.context.save();
             for(let i = 0; i < this._objects.length; i++)
                 this._objects[i].drawObject();
