@@ -22,16 +22,22 @@ export enum Direction {
 };
 
 export class GameObject implements IPhysical, InputHandler {
-    protected _firstUpdate:number;
-    protected _initPosition:Vec2;
+    protected _originalPosition: Vec2;
+    protected _originalVelocity: Vec2;
+    protected _firstUpdate: number;
+    protected _initPosition: Vec2;
     protected _velocity: Vec2;
     protected _image: IDrawable;
     protected _playerCollisionCallback: PlayerCollisionCallback;
     protected _inputHandlers: InputHandlerTrack[];
 
     constructor(initPosition: Vec2, initVelocity: Vec2, representation: IDrawable, firstUpdate: number, playerCollisionCallback?: PlayerCollisionCallback) {
-        this._initPosition = initPosition;
+        this._originalPosition = new Vec2(initPosition.x, initPosition.y);
+        this._initPosition= initPosition;
+
+        this._originalVelocity = new Vec2(initVelocity.x, initVelocity.y);
         this._velocity = initVelocity;
+
         this._image = representation;
         this._firstUpdate = firstUpdate;
         this._playerCollisionCallback = playerCollisionCallback || (() => {});
@@ -63,11 +69,11 @@ export class GameObject implements IPhysical, InputHandler {
     //Game Logic Management
     
     public update(time: number): void {
-        
+        if(this._firstUpdate === null) this._firstUpdate = time;
     }
 
     public drawObject(time: number): void {
-        //this._image.context.fillRect(this.getPosition(time).x, this.getPosition(time).y, this.width, this.height);
+        this._image.context.fillRect(this.getPosition(time).x, this.getPosition(time).y, this.width, this.height);
         this._image.draw(this.getPosition(time).x, this.getPosition(time).y, this._velocity.x < 0);
     }
 
@@ -87,6 +93,14 @@ export class GameObject implements IPhysical, InputHandler {
     
     public inputAttach(documentReference: Document): InputHandlerTrack[] {
         return [];
+    }
+
+    public reset(): void {
+        this._firstUpdate = null;
+        this._initPosition.x = this._originalPosition.x;
+        this._initPosition.y = this._originalPosition.y;
+        this._velocity.x = this._originalVelocity.x;
+        this._velocity.y = this._originalVelocity.y;
     }
 
     //Representation Management
@@ -129,4 +143,6 @@ export class GameObject implements IPhysical, InputHandler {
             }
         return null;
     }
+
+
 }

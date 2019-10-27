@@ -1,3 +1,5 @@
+import { Goal } from './../goal';
+import { GameObject } from './../../physics/gameObject';
 import { Bomb } from './../obstacles/obstacle';
 import { Shot } from './../shot';
 import { Block } from './../obstacles/block';
@@ -30,28 +32,34 @@ export class PlayScene extends Scene {
             new OneShotAnimation(canvas.context, resourceManager.getResource('jump'), 9, 0.3)
         );
 
-        const player: Player = new Player(new Vec2(0, canvas.height - robotSprites.idling.height), robotSprites, 0, canvas.width, canvas.height, shotsRequests);
+        const player: Player = new Player(new Vec2(0, canvas.height - robotSprites.idling.height), robotSprites, 0, canvas.width, canvas.height, () => sceneManager.setScene('gameover'), () => sceneManager.setScene('win'));
 
         const blockSprite = new StaticSprite(canvas.context, resourceManager.getResource('block'), 0.3);
         const shotAnimation = new StaticSprite(canvas.context, resourceManager.getResource('shot'));
-        const bombSprite = new StaticSprite(canvas.context, resourceManager.getResource('bomb'), 0.4);
+        const bombSpriteOne = new Animation(canvas.context, resourceManager.getResource('one'), 10);
+        const bombSpriteTwo = new Animation(canvas.context, resourceManager.getResource('two'), 10);
+        const starSprite = new StaticSprite(canvas.context, resourceManager.getResource('goal'), 0.3);
 
         let timeText = new TextControl(canvas.context, new Vec2(0, 5), 300, 70, `Time: 0`, resourceManager.getDrawable('time_background'));
-        let lifeCountText = new TextControl(canvas.context, new Vec2(300, 5), 300, 70, `Lifes: 5`, resourceManager.getDrawable('time_background'));
-        let block1 = new Block(new Vec2(400, canvas.height - blockSprite.height - 300), blockSprite, 0);
-        let block2 = new Block(new Vec2(400 + blockSprite.width, canvas.height - blockSprite.height - 300), blockSprite, 0);
-        let bomb1 = new Bomb(new Vec2(800, canvas.height - blockSprite.height - 300), bombSprite, 0);
-        let bomb2 = new Bomb(new Vec2(600, canvas.height - blockSprite.height - 300), bombSprite, 0);
+        const blocks = [
+            new Block(new Vec2(400, canvas.height - blockSprite.height - 300), blockSprite, 0),
+            new Block(new Vec2(400 + blockSprite.width, canvas.height - blockSprite.height - 300), blockSprite, 0),
+            new Block(new Vec2(600 + blockSprite.width, canvas.height - blockSprite.height - 500), blockSprite, 0),
+            new Block(new Vec2(700 + blockSprite.width, canvas.height - blockSprite.height - 700), blockSprite, 0),
+            new Block(new Vec2(800 + blockSprite.width, canvas.height - blockSprite.height - 600), blockSprite, 0),
+        ]
+        const goal = new Goal(new Vec2(canvas.width - starSprite.width - 100, canvas.height - starSprite.height - 300), starSprite);
+        
+        let bomb1 = new Bomb(new Vec2(800, canvas.height - blockSprite.height - 300), bombSpriteOne, 0);
+        let bomb2 = new Bomb(new Vec2(600, canvas.height - blockSprite.height - 300), bombSpriteTwo, 0);
         super(document, canvas, resourceManager.getDrawable('menu_background'), [ 
             player,
             timeText,
-            lifeCountText,
-            block1, block2, bomb1, bomb2
-         ]);
+            bomb1, bomb2,
+            goal
+         ].concat(blocks));
 
          this.timeText = timeText;
-         this.lifeCountText = lifeCountText;
-         this.lifeCount = 5;
          this.shotsRequests = shotsRequests;
          this.shotAnimation = shotAnimation;
          this.sceneManager = sceneManager;
@@ -59,15 +67,6 @@ export class PlayScene extends Scene {
 
     public play(newTime: number): void {
         super.play(newTime);
-       if(this._player.life <= 0) this.sceneManager.setScene('gameover')
-       else{
-           this.timeText.changeText(`Time: ${Math.trunc((newTime - this._fistUpdate) / 1000)}`);
-           this.lifeCountText.changeText(`Lifes: ${this._player.life}`);
-       }
-    }
-
-    public initialize(): void {
-        super.initialize();
-        this._player.reset();
+        this.timeText.changeText(`Time: ${Math.trunc((newTime - this._fistUpdate) / 1000)}`);
     }
 }

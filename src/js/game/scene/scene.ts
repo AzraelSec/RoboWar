@@ -74,18 +74,21 @@ export class Scene {
     }
 
     public initialize(): void {
+        this._lastUpdate = 0;
+        this._fistUpdate = null;
         for(let i = 0; i < this._objects.length; i++)
             this._eventsListeners = this._eventsListeners.concat(this._objects[i].inputAttach(this._document));
         for(let i = 0; i < this._controls.length; i++)
             this._eventsListeners = this._eventsListeners.concat(this._controls[i].inputAttach(this._document));
-    }
+        for(let o of this._objects) o.reset();
+        }
 
     public finalize(): void {
         for(let i = 0; i < this._eventsListeners.length; i++)
             this._document.removeEventListener(this._eventsListeners[i].type, this._eventsListeners[i].callback);
     }
 
-    private getCollisions(time: number, object: GameObject): CollisionScaffold[] {
+    protected getCollisions(time: number, object: GameObject): CollisionScaffold[] {
         const colliding: CollisionScaffold[] = [];
         if(object) {
             for(let obj of this._objects)

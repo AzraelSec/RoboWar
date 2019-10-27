@@ -1,3 +1,4 @@
+import { WinScene } from './game/gui/winScene';
 import { GameOverScene } from './game/gui/gameOverScene';
 import { PlayScene } from './game/gui/playScene';
 import { SceneManager, SceneFrame } from './game/scene/sceneManager';
@@ -8,13 +9,14 @@ import { StartScene } from './game/gui/startScene';
 
 //Resource Targeting
 const resourceManager = new ResourceManager([
-    'player/idle', 'player/run', 'player/jump', 'shot',
+    'player/idle', 'player/run', 'player/jump', 'player/dead', 'shot',
     'background', 'menu_background',
-    'red_barrel',
+    'red_barrel', 'goal',
     'gui/play_button_1', 'gui/play_button_2', 'gui/start_button',
+    'gui/menu_button_1', 'gui/menu_button_2',
     'gui/replay_button_1', 'gui/replay_button_2',
     'gui/time_background', 'block',
-    'obstacles/bomb'
+    'obstacles/bombs/one', 'obstacles/bombs/two'
 ]);
 
 //Resource Prefetching
@@ -24,17 +26,15 @@ resourceManager.resourcesPrefetch().then(() => {
     const canvas = new Canvas('scene');
     let sceneManager = new SceneManager();
 
-    let start: Scene = new StartScene(document, canvas, resourceManager, sceneManager);
-    let gameScene: Scene = new PlayScene(document, canvas, resourceManager, sceneManager);
-    let gameoverScene: Scene = new GameOverScene(document, canvas, resourceManager, sceneManager);
-
     sceneManager.addScene(<SceneFrame> { 
-        name: 'start', scene: start
+        name: 'start', scene: new StartScene(document, canvas, resourceManager, sceneManager);
     }).addScene(<SceneFrame> {
-        name: 'play', scene: gameScene
+        name: 'play', scene: new PlayScene(document, canvas, resourceManager, sceneManager);
     }).addScene(<SceneFrame> {
-        name: 'gameover', scene: gameoverScene
-    });
+        name: 'gameover', scene: new GameOverScene(document, canvas, resourceManager, sceneManager);
+    }).addScene(<SceneFrame> {
+        name: 'win', scene: new WinScene(document, canvas, resourceManager, sceneManager);
+    })
 
     sceneManager.setScene('start');
     sceneManager.start();
