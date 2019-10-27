@@ -3,7 +3,7 @@ import { GameObject } from './gameObject';
 import { Vec2 } from './vec2';
 
 export class FallingObject extends GameObject {
-    public static GRAVITY_ACELERATION: number = 0.02//9.8;
+    public static GRAVITY_ACELERATION: number = 0.016//9.8;
     protected _isFloating: boolean;
 
     constructor(initosition: Vec2, initVelocity: Vec2, representation: IDrawable, firstUpdate: number) {

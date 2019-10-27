@@ -1,11 +1,10 @@
-import { CollisionScaffold } from './../physics/gameObject';
+import { CollisionScaffold, GameObject } from './../physics/gameObject';
 import { Obstacle } from './obstacles/obstacle';
 import { InputHandler, InputHandlerTrack } from './inputHandler';
 import { FallingObject } from './../physics/fallingObject';
 import { Animation } from '../graphics/representations/animation';
 import { Vec2, Axis } from '../physics/vec2';
 import { Direction } from '../physics/gameObject';
-
 
 
 enum MovementKeys {
@@ -20,6 +19,11 @@ interface MovementRequestState {
     right: boolean,
     jump: boolean,
     shot: boolean
+}
+
+type WorldBounds = {
+    width: number;
+    height: number;
 }
 
 export enum PlayerStates {
@@ -63,7 +67,7 @@ export class PlayerStatesResources {
 
 export class Player extends FallingObject {
     public static RUNNING_HORIZONTAL_VELOCITY: number = 0.5;
-    public static RUNNING_VERTICAL_VELOCITY: number = 5;
+    public static RUNNING_VERTICAL_VELOCITY: number = 3.5;
 
     private _playerStatesResources: PlayerStatesResources;
     private _actualResource: Animation;
@@ -71,8 +75,10 @@ export class Player extends FallingObject {
     private _playerActualMovement: MovementRequestState;
     private _playerMovementRequest: MovementRequestState;
 
-    private _worldBounds: any;
+    private _worldBounds: WorldBounds;
     protected _shotRequests: Vec2[];
+    private _life: number;
+    private _lastHurt: Obstacle;
 
     constructor(initPosition: Vec2, statesResources: PlayerStatesResources, firstUpdate: number, maxWidth: number, maxHeight: number, shotRequests) {
         super(initPosition, Vec2.Zero(), statesResources.idling, firstUpdate);
@@ -92,42 +98,25 @@ export class Player extends FallingObject {
             height: maxHeight
         }
         this._shotRequests = [];
+        this._life = 5;
+        this._lastHurt = null;
     }
 
     public update(time: number, colliding?: CollisionScaffold[]): void {
-        let lastPosition = this.getPosition(time);
-        let oldX = lastPosition.x;
-        let oldY = lastPosition.y;
-        let oldVX = this._velocity.x;
-        let oldVY = this._velocity.y;
+        const oldPosition = this.getPosition(time);
+        const oldVelocity = this.getVelocity();
 
-        let floaing = undefined === colliding.find( obj => obj.side === Direction.BOTTOM && oldVY > 0)
-        if (this._isFloating && !floaing){
-            console.log('watch this: ', colliding.filter( obj => obj.side === Direction.BOTTOM && oldVY > 0))
-            this._isFloating = false;
+        let onABrick = undefined !== colliding.find( obj => !obj.collider.deadly && obj.side === Direction.BOTTOM && oldVelocity.y > 0)
+        if (this._isFloating && onABrick) 
             this.bottomBoundsHitHandling();
-        }
+        else if(oldPosition.y < this._worldBounds.height - this.height) this._isFloating = true;
         
         super.update(time);
-        let wishedPosition = this.getPosition(time);
-        for(let col of colliding) {
-            if(col.side === Direction.RIGHT && oldVX > 0) {
-                this.setPosition(time, oldX, lastPosition.y);
-                this.setVelocity(time, 0, this._velocity.y);
-            } else if(col.side === Direction.LEFT && oldVX < 0) {
-                this.setPosition(time, oldX, lastPosition.y);
-                this.setVelocity(time, 0, this._velocity.y);
-            } else if(col.side === Direction.TOP && oldVY < 0) {
-                this.setPosition(time, wishedPosition.x, oldY);
-                this.setVelocity(time, this._velocity.x, 0);
-            } else if(col.side === Direction.BOTTOM && oldVY > 0) {
-                this.setPosition(time, wishedPosition.x, col.collider.getPosition(time).y - this.height);
-                this.setVelocity(time, 0, 0);
-            }
-        }
 
+        this.collidingsHandling(time, colliding, oldPosition, oldVelocity);
         this.boundsAdjustPosition(time);
         this.manageInputRequests(time);
+        this.lifeUpdate(time, colliding);
     }
 
     private changeState(newState: PlayerStates): void {
@@ -140,11 +129,18 @@ export class Player extends FallingObject {
     }
 
     private shotHandling(): void {
-        //this._shotRequests.push(new Vec2(this._actualPosition.x, this._actualPosition.y));
+    }
+
+    public get life() {
+        return this._life;
+    }
+
+    public reset() {
+        this._life = 5;
     }
 
     // BOUNDS COLLISION HANDLING
-    private boundsAdjustPosition(time: number, colliding?: CollisionScaffold[]): void {
+    private boundsAdjustPosition(time: number): void {
         let lastPosition = this.getPosition(time);
         let leftBounce = (x: number) => {
             this.setPosition(time, x, lastPosition.y);
@@ -167,7 +163,6 @@ export class Player extends FallingObject {
             this.bottomBoundsHitHandling();
         }
         lastPosition = this.getPosition(time);
-
         if(lastPosition.x < 0) leftBounce(0);
         else if(lastPosition.y < 0) topBounce(0);
         else if(lastPosition.x + this.width > this._worldBounds.width) rightBounce(this._worldBounds.width);
@@ -177,8 +172,37 @@ export class Player extends FallingObject {
     private bottomBoundsHitHandling(): void {
         this._isFloating = false;
         this._playerActualMovement.jump = false;
-        if(this._velocity.x !== 0) this.changeState(PlayerStates.RUNNING);
-        else this.changeState(PlayerStates.IDLING);
+        if(this.getVelocity().x !== 0) this.changeState(PlayerStates.RUNNING);
+        else this.changeState(PlayerStates.IDLING)
+    }
+
+    private collidingsHandling(time: number, colliding: CollisionScaffold[], oldPosition: Vec2, oldVelocity: Vec2): void {
+        const wishedPosition = this.getPosition(time);
+        for(let col of colliding) {
+            if(col.side === Direction.RIGHT && oldVelocity.x > 0) {
+                this.setPosition(time, oldPosition.x, oldPosition.y);
+                this.setVelocity(time, 0, this._velocity.y);
+            } else if(col.side === Direction.LEFT && oldVelocity.x < 0) {
+                this.setPosition(time, oldPosition.x, oldPosition.y);
+                this.setVelocity(time, 0, this._velocity.y);
+            } else if(col.side === Direction.TOP && oldVelocity.y < 0) {
+                this.setPosition(time, wishedPosition.x, oldPosition.y);
+                this.setVelocity(time, this._velocity.x, 0);
+            } else if(col.side === Direction.BOTTOM && oldVelocity.y > 0) {
+                this.setPosition(time, wishedPosition.x, col.collider.getPosition(time).y - this.height);
+                this.setVelocity(time, this._velocity.x, 0);
+            }
+        }
+    }
+
+    private lifeUpdate(time: number, colliding: CollisionScaffold[]): boolean {
+        for(let object of colliding)
+            if(object.collider.deadly && object.collider !== this._lastHurt) {
+                this._lastHurt = object.collider;
+                this._life -= 1;
+            }
+
+        return this._life <= 0;
     }
 
     // INPUT MANAGEMENT
@@ -219,7 +243,7 @@ export class Player extends FallingObject {
         if(!this._playerActualMovement.jump && !this._playerActualMovement.shot &&
             !this._playerActualMovement.left && !this._playerActualMovement.right) {
                 this.setVelocity(time, 0, this._velocity.y);
-            this.changeState(this._isFloating ? PlayerStates.JUMPING : PlayerStates.IDLING);
+            this.changeState(this._isFloating && this._playerActualMovement.jump ? PlayerStates.JUMPING : PlayerStates.IDLING);
         }
     }
 

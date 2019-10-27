@@ -9,4 +9,14 @@ export class Obstacle extends GameObject {
         super(initPosition, initVelocity, representation, firstUpdate);
         this._deadly = deadly;
     }
+
+    public get deadly() {
+        return this._deadly;
+    }
+}
+
+export class Bomb extends Obstacle {
+    constructor(initPosition: Vec2, representation: StaticSprite, firstUpdate: number) {
+        super(initPosition, new Vec2(0, 0), representation, firstUpdate, true);
+    }
 }

@@ -46,8 +46,8 @@ export class GameObject implements IPhysical, InputHandler {
 
     public setVelocity(time: number, nx: number, ny: number): void {
         if(this._velocity.x !== nx || this._velocity.y !== ny) {
-            this._initPosition.x = this.getPosition(time).x;//this.getPosition(time).x;
-            this._initPosition.y = this.getPosition(time).y;//this.getPosition(time).y;
+            this._initPosition.x = this.getPosition(time).x;
+            this._initPosition.y = this.getPosition(time).y;
             this._firstUpdate = time;
             this._velocity.x = nx;
             this._velocity.y = ny;
@@ -67,7 +67,7 @@ export class GameObject implements IPhysical, InputHandler {
     }
 
     public drawObject(time: number): void {
-        this._image.context.fillRect(this.getPosition(time).x, this.getPosition(time).y, this.width, this.height);
+        //this._image.context.fillRect(this.getPosition(time).x, this.getPosition(time).y, this.width, this.height);
         this._image.draw(this.getPosition(time).x, this.getPosition(time).y, this._velocity.x < 0);
     }
 
@@ -118,7 +118,7 @@ export class GameObject implements IPhysical, InputHandler {
                 let dx: number = tcx - ocx;
                 let dy: number = tcy - ocy;
                 
-                console.debug(`h: ${h}\nw: ${w}\ntcx: ${tcx}\ntcy: ${tcy}\nocx: ${ocx}\nocy: ${ocy}\ndx: ${dx}\ndy: ${dy}\nexp: ${Math.abs(dx / w) > Math.abs(dy / h)}`);
+                //console.debug(`h: ${h}\nw: ${w}\ntcx: ${tcx}\ntcy: ${tcy}\nocx: ${ocx}\nocy: ${ocy}\ndx: ${dx}\ndy: ${dy}\nexp: ${Math.abs(dx / w) > Math.abs(dy / h)}`);
 
                 if(Math.abs(dx / w) > Math.abs(dy / h)) {
                     return dx < 0 ? Direction.RIGHT : Direction.LEFT;
