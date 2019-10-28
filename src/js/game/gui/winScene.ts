@@ -1,3 +1,4 @@
+import { GameObject } from './../../physics/gameObject';
 import { Animation } from './../../graphics/representations/animation';
 import { DrawableControl } from './../../graphics/controls/control';
 import { OneShotAnimation } from './../../graphics/representations/oneShotAnimation';
@@ -28,6 +29,8 @@ export class WinScene extends Scene {
         let textboxWidth = 500;
         let textboxHeight = 400;
         
+        const starSprite = new StaticSprite(canvas.context, resourceManager.getResource('goal'), 0.3);
+
         super(document, canvas, resourceManager.getDrawable('menu_background'), [
             replayButton,
             deadRobot,

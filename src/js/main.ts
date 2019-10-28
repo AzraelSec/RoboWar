@@ -16,7 +16,7 @@ const resourceManager = new ResourceManager([
     'gui/menu_button_1', 'gui/menu_button_2',
     'gui/replay_button_1', 'gui/replay_button_2',
     'gui/time_background', 'block',
-    'obstacles/bombs/one', 'obstacles/bombs/two'
+    'obstacles/bombs/one', 'obstacles/bombs/two', 'obstacles/missile_one'
 ]);
 
 //Resource Prefetching
