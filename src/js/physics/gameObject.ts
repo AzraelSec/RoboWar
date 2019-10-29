@@ -72,9 +72,9 @@ export class GameObject implements IPhysical, InputHandler {
         if(this._firstUpdate === null) this._firstUpdate = time;
     }
 
-    public drawObject(time: number): void {
-        this._image.context.fillRect(this.getPosition(time).x, this.getPosition(time).y, this.width, this.height);
-        this._image.draw(this.getPosition(time).x, this.getPosition(time).y, this._velocity.x < 0);
+    public drawObject(time: number, context: CanvasRenderingContext2D): void {
+        context.fillRect(this.getPosition(time).x, this.getPosition(time).y, this.width, this.height);
+        this._image.draw(context, this.getPosition(time).x, this.getPosition(time).y, this._velocity.x < 0);
     }
 
     public getPosition(time: number): Vec2 {

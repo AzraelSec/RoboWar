@@ -8,20 +8,12 @@ export class ContainerControl extends Control {
     protected _orientation: ContainerOrientation;
 
     constructor(position: Vec2, width: number, height: number, controls?: Control[], orientation ?: ContainerOrientation) {
-        super(null, position, width, height);
+        super(position, width, height);
         this._controls = controls;
         this._orientation = orientation || 'horizontal';
     }
     
-    public drawControl(): void {
-        let padding = 0;
-        for(let i = 0; i < this._controls.length; i++) {
-            const control = this._controls[i];
-            control.context.save();
-            control.context.translate(this._position.x + (this._orientation === 'horizontal' ? padding : 0), this._position.y - (this._orientation === 'vertical' ? padding : 0));
-            control.drawControl();
-            control.context.restore();
-            padding += this._orientation === 'vertical' ? this.height : this.width;
-        }
+    public drawControl(context: CanvasRenderingContext2D): void {
+        throw new Error(`Not implemented yet`);
     }
 }

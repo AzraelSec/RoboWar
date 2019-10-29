@@ -26,20 +26,20 @@ export class PlayScene extends Scene {
     constructor(document: Document, canvas: Canvas, resourceManager: ResourceManager, sceneManager: SceneManager) {
         const shotsRequests: Vec2[] = [];
         const robotSprites = new PlayerStatesResources(
-            new Animation(canvas.context, resourceManager.getResource('run'), 9, 0.3),
-            new Animation(canvas.context, resourceManager.getResource('idle'), 9, 0.3),
-            new OneShotAnimation(canvas.context, resourceManager.getResource('jump'), 9, 0.3)
+            new Animation(resourceManager.getResource('run'), 9, 0.3),
+            new Animation(resourceManager.getResource('idle'), 9, 0.3),
+            new OneShotAnimation(resourceManager.getResource('jump'), 9, 0.3)
         );
 
         const player: Player = new Player(new Vec2(0, canvas.height - robotSprites.idling.height), robotSprites, 0, canvas.width, canvas.height, () => sceneManager.setScene('gameover'), () => sceneManager.setScene('win'));
 
-        const blockSprite = new StaticSprite(canvas.context, resourceManager.getResource('block'), 0.3);
-        const shotAnimation = new StaticSprite(canvas.context, resourceManager.getResource('shot'));
-        const bombSpriteOne = new Animation(canvas.context, resourceManager.getResource('one'), 10);
-        const bombSpriteTwo = new Animation(canvas.context, resourceManager.getResource('missile_one'), 9);
-        const starSprite = new StaticSprite(canvas.context, resourceManager.getResource('goal'), 0.3);
+        const blockSprite = new StaticSprite(resourceManager.getResource('block'), 0.3);
+        const shotAnimation = new StaticSprite(resourceManager.getResource('shot'));
+        const bombSpriteOne = new Animation(resourceManager.getResource('one'), 10);
+        const bombSpriteTwo = new Animation(resourceManager.getResource('missile_one'), 9);
+        const starSprite = new StaticSprite(resourceManager.getResource('goal'), 0.3);
 
-        let timeText = new TextControl(canvas.context, new Vec2(0, 5), 300, 70, `Time: 0`, resourceManager.getDrawable('time_background'));
+        let timeText = new TextControl(new Vec2(0, 5), 300, 70, `Time: 0`, resourceManager.getDrawable('time_background'));
         const blocks = [
             new Block(new Vec2(400, canvas.height - blockSprite.height - 300), blockSprite),
             new Block(new Vec2(400 + blockSprite.width, canvas.height - blockSprite.height - 300), blockSprite),

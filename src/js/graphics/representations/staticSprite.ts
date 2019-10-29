@@ -5,24 +5,21 @@ export class StaticSprite implements IDrawable {
     private _spritesheet: Resource;
     private _width: number;
     private _height: number;
-    private _context: CanvasRenderingContext2D;
     private _scaleFactor: number;
 
     constructor(
-        context: CanvasRenderingContext2D,
         resource: Resource,
         scaleFactor?: number,
     ) {
         this._spritesheet = resource;
         this._height = resource.content.height;
         this._width = resource.content.width;
-        this._context = context;
         this._scaleFactor = scaleFactor || 0.8;
     }
 
-    draw(x: number, y: number, _: boolean): void {
-        this._context.save();
-        this._context.drawImage(
+    public draw(context: CanvasRenderingContext2D, x: number, y: number, _: boolean): void {
+        context.save();
+        context.drawImage(
             this._spritesheet.content,
             0,
             0,
@@ -33,7 +30,7 @@ export class StaticSprite implements IDrawable {
             this.width,
             this.height
         );
-        this._context.restore();
+        context.restore();
     }
 
     public get width(): number {
@@ -42,13 +39,5 @@ export class StaticSprite implements IDrawable {
 
     public get height(): number {
         return this._height * this._scaleFactor;
-    }
-
-    public get context(): CanvasRenderingContext2D {
-        return this._context;
-    }
-
-    public set context(context: CanvasRenderingContext2D) {
-        this._context = context;
     }
 }

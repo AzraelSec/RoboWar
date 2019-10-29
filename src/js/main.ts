@@ -27,13 +27,13 @@ resourceManager.resourcesPrefetch().then(() => {
     let sceneManager = new SceneManager();
 
     sceneManager.addScene(<SceneFrame> { 
-        name: 'start', scene: new StartScene(document, canvas, resourceManager, sceneManager);
+        name: 'start', scene: new StartScene(document, canvas, resourceManager, sceneManager)
     }).addScene(<SceneFrame> {
-        name: 'play', scene: new PlayScene(document, canvas, resourceManager, sceneManager);
+        name: 'play', scene: new PlayScene(document, canvas, resourceManager, sceneManager)
     }).addScene(<SceneFrame> {
-        name: 'gameover', scene: new GameOverScene(document, canvas, resourceManager, sceneManager);
+        name: 'gameover', scene: new GameOverScene(document, canvas, resourceManager, sceneManager)
     }).addScene(<SceneFrame> {
-        name: 'win', scene: new WinScene(document, canvas, resourceManager, sceneManager);
+        name: 'win', scene: new WinScene(document, canvas, resourceManager, sceneManager)
     })
 
     sceneManager.setScene('start');

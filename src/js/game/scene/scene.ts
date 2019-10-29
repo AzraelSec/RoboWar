@@ -65,9 +65,9 @@ export class Scene {
             this._canvas.clear(this._background);
             this._canvas.context.save();
             for(let i = 0; i < this._objects.length; i++)
-                this._objects[i].drawObject(newTime);
+                this._objects[i].drawObject(newTime,this._canvas.context);
             for(let i = 0; i < this._controls.length; i++)
-                this._controls[i].drawControl();
+                this._controls[i].drawControl(this._canvas.context);
             this._canvas.context.restore();
             this._lastUpdate = newTime;
         }
