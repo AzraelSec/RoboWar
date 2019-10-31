@@ -73,8 +73,12 @@ export class GameObject implements IPhysical, InputHandler {
     }
 
     public drawObject(time: number, context: CanvasRenderingContext2D): void {
-        context.fillRect(this.getPosition(time).x, this.getPosition(time).y, this.width, this.height);
-        this._image.draw(context, this.getPosition(time).x, this.getPosition(time).y, this._velocity.x < 0);
+        let position: Vec2 = this.getPosition(time);
+        context.save();
+        //context.fillStyle = "#32a852";
+        //context.fillRect(position.x, position.y, this.width, this.height);
+        this._image.draw(context, position.x - Math.abs((this._image.width - this.width) * 0.5), position.y - Math.abs((this._image.height - this.height) * 0.5), this._velocity.x < 0);
+        context.restore();
     }
 
     public getPosition(time: number): Vec2 {
@@ -85,10 +89,11 @@ export class GameObject implements IPhysical, InputHandler {
     }
 
     protected isIn(time:number, x: number, y: number): boolean {
-        return this.getPosition(time).x < x  && 
-        x < this.getPosition(time).x + this._image.width && 
-        this.getPosition(time).y < y &&
-        y < this.getPosition(time).y + this._image.height;
+        let position: Vec2 = this.getPosition(time);
+        return position.x < x  && 
+        x < position.x + this._image.width && 
+        position.y < y &&
+        y < position.y + this._image.height;
     }
     
     public inputAttach(documentReference: Document): InputHandlerTrack[] {
@@ -104,7 +109,6 @@ export class GameObject implements IPhysical, InputHandler {
     }
 
     //Representation Management
-
     protected changeRepresentation(newRepresentation: IDrawable): void {
         this._image = newRepresentation;
     }
@@ -119,16 +123,19 @@ export class GameObject implements IPhysical, InputHandler {
 
     //Collision Detection
     public isColliding(time: number, object: GameObject): Direction {
-        if(this.getPosition(time).x < object.getPosition(time).x + object.width &&
-            this.getPosition(time).x + this.width > object.getPosition(time).x &&
-            this.getPosition(time).y < object.getPosition(time).y + object.height &&
-            this.getPosition(time).y + this.height > object.getPosition(time).y) {
+        let thisPosition: Vec2 = this.getPosition(time);
+        let objectPosition: Vec2 = object.getPosition(time);
+
+        if(thisPosition.x < objectPosition.x + object.width &&
+            thisPosition.x + this.width > objectPosition.x &&
+            thisPosition.y < objectPosition.y + object.height &&
+            thisPosition.y + this.height > objectPosition.y) {
                 let h: number = (this.height + object.height) * 0.5;
                 let w: number = (this.width + object.width) * 0.5;
-                let tcx: number = this.getPosition(time).x + this.width * 0.5;
-                let tcy: number = this.getPosition(time).y + this.height * 0.5;
-                let ocx: number = object.getPosition(time).x + object.width * 0.5;
-                let ocy: number = object.getPosition(time).y + object.height * 0.5;
+                let tcx: number = thisPosition.x + this.width * 0.5;
+                let tcy: number = thisPosition.y + this.height * 0.5;
+                let ocx: number = objectPosition.x + object.width * 0.5;
+                let ocy: number = objectPosition.y + object.height * 0.5;
                 let dx: number = tcx - ocx;
                 let dy: number = tcy - ocy;
                 

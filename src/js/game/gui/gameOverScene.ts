@@ -24,8 +24,8 @@ export class GameOverScene extends Scene {
         let robotSprite = new OneShotAnimation(resourceManager.getResource('dead'), 9, 1.2, 0.3);
         let deadRobot = new DrawableControl(new Vec2(canvas.width - robotSprite.width, canvas.height - robotSprite.height), robotSprite);
 
-        let textboxWidth = 500;
-        let textboxHeight = 400;
+        let textboxWidth = 1200;
+        let textboxHeight = 600;
         
         super(document, canvas, resourceManager.getDrawable('menu_background'), [
             replayButton,

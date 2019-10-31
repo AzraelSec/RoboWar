@@ -191,19 +191,27 @@ export class Player extends FallingObject {
         const wishedPosition = this.getPosition(time);
         for(let col of colliding) {
             if(col.side === Direction.RIGHT && oldVelocity.x > 0) {
-                this.setPosition(time, oldPosition.x, oldPosition.y);
+                this.setPosition(time, col.collider.getPosition(time).x - this.width, oldPosition.y);
                 this.setVelocity(time, 0, this._velocity.y);
             } else if(col.side === Direction.LEFT && oldVelocity.x < 0) {
-                this.setPosition(time, oldPosition.x, oldPosition.y);
+                this.setPosition(time, col.collider.getPosition(time).x + col.collider.width, oldPosition.y);
                 this.setVelocity(time, 0, this._velocity.y);
             } else if(col.side === Direction.TOP && oldVelocity.y < 0) {
-                this.setPosition(time, wishedPosition.x, oldPosition.y);
+                this.setPosition(time, wishedPosition.x, col.collider.getPosition(time).y + col.collider.height);
                 this.setVelocity(time, this._velocity.x, 0);
             } else if(col.side === Direction.BOTTOM && oldVelocity.y > 0) {
                 this.setPosition(time, wishedPosition.x, col.collider.getPosition(time).y - this.height);
                 this.setVelocity(time, this._velocity.x, 0);
             }
         }
+    }
+
+    public get width() {
+        return this._image.width * 0.6;
+    }
+
+    public get height() {
+        return this._image.height * 0.9;
     }
 
     // INPUT MANAGEMENT

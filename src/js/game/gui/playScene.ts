@@ -46,16 +46,17 @@ export class PlayScene extends Scene {
             new Block(new Vec2(600 + blockSprite.width, canvas.height - blockSprite.height - 500), blockSprite),
             new Block(new Vec2(700 + blockSprite.width, canvas.height - blockSprite.height - 700), blockSprite),
             new Block(new Vec2(800 + blockSprite.width, canvas.height - blockSprite.height - 600), blockSprite),
+            new Block(new Vec2(800 + blockSprite.width, canvas.height - blockSprite.height - 100), blockSprite),
         ]
         const goal = new Goal(new Vec2(canvas.width - starSprite.width - 100, canvas.height - starSprite.height - 300), starSprite);
         
-        let bomb1 = new Bomb(new Vec2(800, canvas.height - blockSprite.height - 300), bombSpriteOne);
+        let bomb1 = new Bomb(new Vec2(100000, canvas.height - blockSprite.height - 300), bombSpriteOne);
         let missile = new Missile(canvas.width, canvas.height - blockSprite.height - 500, bombSpriteTwo);
         super(document, canvas, resourceManager.getDrawable('menu_background'), [ 
             player,
             timeText,
-            bomb1, missile,
-            goal
+            bomb1,
+            //goal
          ].concat(blocks));
 
          this.timeText = timeText;
