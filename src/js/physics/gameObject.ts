@@ -1,3 +1,4 @@
+import { ResourceManager } from './../graphics/resourceLoader';
 import { Obstacle } from './../game/obstacles/obstacle';
 import { InputHandler, InputHandlerTrack } from './../game/inputHandler';
 import { Vec2 } from './vec2';
@@ -30,15 +31,17 @@ export class GameObject implements IPhysical, InputHandler {
     protected _image: IDrawable;
     protected _playerCollisionCallback: PlayerCollisionCallback;
     protected _inputHandlers: InputHandlerTrack[];
+    protected _resourceManager: ResourceManager;
 
-    constructor(initPosition: Vec2, initVelocity: Vec2, representation: IDrawable, firstUpdate: number, playerCollisionCallback?: PlayerCollisionCallback) {
+    constructor(initPosition: Vec2, initVelocity: Vec2, resourceManager: ResourceManager, firstUpdate: number, playerCollisionCallback?: PlayerCollisionCallback) {
         this._originalPosition = new Vec2(initPosition.x, initPosition.y);
         this._initPosition= initPosition;
 
         this._originalVelocity = new Vec2(initVelocity.x, initVelocity.y);
         this._velocity = initVelocity;
 
-        this._image = representation;
+        this._image = null;
+        this._resourceManager = resourceManager;
         this._firstUpdate = firstUpdate;
         this._playerCollisionCallback = playerCollisionCallback || (() => {});
         this._inputHandlers = [];
@@ -75,9 +78,10 @@ export class GameObject implements IPhysical, InputHandler {
     public drawObject(time: number, context: CanvasRenderingContext2D): void {
         let position: Vec2 = this.getPosition(time);
         context.save();
-        //context.fillStyle = "#32a852";
-        //context.fillRect(position.x, position.y, this.width, this.height);
-        this._image.draw(context, position.x - Math.abs((this._image.width - this.width) * 0.5), position.y - Math.abs((this._image.height - this.height) * 0.5), this._velocity.x < 0);
+        context.fillStyle = "#32a852";
+        context.fillRect(position.x, position.y, this.width, this.height);
+        if(this._image)
+            this._image.draw(context, position.x - Math.abs((this._image.width - this.width) * 0.5), position.y - Math.abs((this._image.height - this.height) * 0.5), this._velocity.x < 0);
         context.restore();
     }
 
@@ -114,11 +118,11 @@ export class GameObject implements IPhysical, InputHandler {
     }
 
     public get width() {
-        return this._image.width;
+        return this._image.width || 0;
     }
 
     public get height() {
-        return this._image.height;
+        return this._image.height || 0;
     }
 
     //Collision Detection

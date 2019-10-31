@@ -1,4 +1,4 @@
-import { IDrawable } from '../graphics/representations/drawable';
+import { ResourceManager } from './../graphics/resourceLoader';
 import { GameObject } from './gameObject';
 import { Vec2 } from './vec2';
 
@@ -6,8 +6,8 @@ export class FallingObject extends GameObject {
     public static GRAVITY_ACELERATION: number = 0.016//9.8;
     protected _isFloating: boolean;
 
-    constructor(initosition: Vec2, initVelocity: Vec2, representation: IDrawable, firstUpdate: number) {
-        super(initosition, initVelocity, representation, firstUpdate);
+    constructor(initosition: Vec2, initVelocity: Vec2, resourceManager: ResourceManager, firstUpdate: number) {
+        super(initosition, initVelocity, resourceManager, firstUpdate);
         this._isFloating = true;
     }
 

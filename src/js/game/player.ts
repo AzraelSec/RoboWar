@@ -1,3 +1,4 @@
+import { ResourceManager } from './../graphics/resourceLoader';
 import { Goal } from './goal';
 import { Block } from './obstacles/block';
 import { CollisionScaffold, GameObject } from './../physics/gameObject';
@@ -7,6 +8,7 @@ import { FallingObject } from './../physics/fallingObject';
 import { Animation } from '../graphics/representations/animation';
 import { Vec2, Axis } from '../physics/vec2';
 import { Direction } from '../physics/gameObject';
+import { OneShotAnimation } from '../graphics/representations/oneShotAnimation';
 
 
 enum MovementKeys {
@@ -81,11 +83,15 @@ export class Player extends FallingObject {
     private _winningAction: () => void;
     private _worldBounds: WorldBounds;
 
-    constructor(initPosition: Vec2, statesResources: PlayerStatesResources, firstUpdate: number, maxWidth: number, maxHeight: number, dyingAction: () => void, winningAction: () => void) {
-        super(initPosition, Vec2.Zero(), statesResources.idling, firstUpdate);
+    constructor(initPosition: Vec2, resourceManager: ResourceManager, firstUpdate: number, maxWidth: number, maxHeight: number, dyingAction: () => void, winningAction: () => void) {
+        super(initPosition, Vec2.Zero(), resourceManager, firstUpdate);
         this._playerState = PlayerStates.IDLING;
-        this._actualResource = statesResources.idling;
-        this._playerStatesResources = statesResources;
+        this._playerStatesResources = new PlayerStatesResources(
+            new Animation(resourceManager.getResource('run'), 9, 0.3),
+            new Animation(resourceManager.getResource('idle'), 9, 0.3),
+            new OneShotAnimation(resourceManager.getResource('jump'), 9, 0.3)
+        );
+        this._actualResource = this._playerStatesResources.idling;
         this._playerActualMovement = <MovementRequestState> {
             left: false, right: false,
             jump: false, shot: false
@@ -207,7 +213,7 @@ export class Player extends FallingObject {
     }
 
     public get width() {
-        return this._image.width * 0.6;
+        return this._image.width * 0.5;
     }
 
     public get height() {

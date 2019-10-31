@@ -25,43 +25,29 @@ export class PlayScene extends Scene {
 
     constructor(document: Document, canvas: Canvas, resourceManager: ResourceManager, sceneManager: SceneManager) {
         const shotsRequests: Vec2[] = [];
-        const robotSprites = new PlayerStatesResources(
-            new Animation(resourceManager.getResource('run'), 9, 0.3),
-            new Animation(resourceManager.getResource('idle'), 9, 0.3),
-            new OneShotAnimation(resourceManager.getResource('jump'), 9, 0.3)
-        );
 
-        const player: Player = new Player(new Vec2(0, canvas.height - robotSprites.idling.height), robotSprites, 0, canvas.width, canvas.height, () => sceneManager.setScene('gameover'), () => sceneManager.setScene('win'));
-
-        const blockSprite = new StaticSprite(resourceManager.getResource('block'), 0.3);
-        const shotAnimation = new StaticSprite(resourceManager.getResource('shot'));
-        const bombSpriteOne = new Animation(resourceManager.getResource('one'), 10);
-        const bombSpriteTwo = new Animation(resourceManager.getResource('missile_one'), 9);
-        const starSprite = new StaticSprite(resourceManager.getResource('goal'), 0.3);
+        const player: Player = new Player(new Vec2(0, 100), resourceManager, 0, canvas.width, canvas.height, () => sceneManager.setScene('gameover'), () => sceneManager.setScene('win'));
 
         let timeText = new TextControl(new Vec2(0, 5), 300, 70, `Time: 0`, resourceManager.getDrawable('time_background'));
         const blocks = [
-            new Block(new Vec2(400, canvas.height - blockSprite.height - 300), blockSprite),
-            new Block(new Vec2(400 + blockSprite.width, canvas.height - blockSprite.height - 300), blockSprite),
-            new Block(new Vec2(600 + blockSprite.width, canvas.height - blockSprite.height - 500), blockSprite),
-            new Block(new Vec2(700 + blockSprite.width, canvas.height - blockSprite.height - 700), blockSprite),
-            new Block(new Vec2(800 + blockSprite.width, canvas.height - blockSprite.height - 600), blockSprite),
-            new Block(new Vec2(800 + blockSprite.width, canvas.height - blockSprite.height - 100), blockSprite),
+            new Block(new Vec2(400, canvas.height - 300), resourceManager),
+            new Block(new Vec2(600, canvas.height - 600), resourceManager),
+            new Block(new Vec2(900, canvas.height - 500), resourceManager),
         ]
-        const goal = new Goal(new Vec2(canvas.width - starSprite.width - 100, canvas.height - starSprite.height - 300), starSprite);
+        const goal = new Goal(new Vec2(canvas.width - 200, canvas.height  - 300), resourceManager);
         
-        let bomb1 = new Bomb(new Vec2(100000, canvas.height - blockSprite.height - 300), bombSpriteOne);
-        let missile = new Missile(canvas.width, canvas.height - blockSprite.height - 500, bombSpriteTwo);
+        let bomb1 = new Bomb(new Vec2(100, canvas.height - 300), resourceManager);
+        let missile = new Missile(canvas.width, canvas.height  - 500, resourceManager);
         super(document, canvas, resourceManager.getDrawable('menu_background'), [ 
             player,
             timeText,
             bomb1,
-            //goal
+            missile,
+            goal
          ].concat(blocks));
 
          this.timeText = timeText;
          this.shotsRequests = shotsRequests;
-         this.shotAnimation = shotAnimation;
     }
 
     public play(newTime: number): void {
