@@ -79,7 +79,7 @@ export class GameObject implements IPhysical, InputHandler {
         let position: Vec2 = this.getPosition(time);
         context.save();
         context.fillStyle = "#32a852";
-        context.fillRect(position.x, position.y, this.width, this.height);
+        //context.fillRect(position.x, position.y, this.width, this.height);
         if(this._image)
             this._image.draw(context, position.x - Math.abs((this._image.width - this.width) * 0.5), position.y - Math.abs((this._image.height - this.height) * 0.5), this._velocity.x < 0);
         context.restore();
