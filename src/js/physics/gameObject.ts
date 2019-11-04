@@ -78,8 +78,6 @@ export class GameObject implements IPhysical, InputHandler {
     public drawObject(time: number, context: CanvasRenderingContext2D): void {
         let position: Vec2 = this.getPosition(time);
         context.save();
-        context.fillStyle = "#32a852";
-        //context.fillRect(position.x, position.y, this.width, this.height);
         if(this._image)
             this._image.draw(context, position.x - Math.abs((this._image.width - this.width) * 0.5), position.y - Math.abs((this._image.height - this.height) * 0.5), this._velocity.x < 0);
         context.restore();
@@ -143,8 +141,6 @@ export class GameObject implements IPhysical, InputHandler {
                 let dx: number = tcx - ocx;
                 let dy: number = tcy - ocy;
                 
-                //console.debug(`h: ${h}\nw: ${w}\ntcx: ${tcx}\ntcy: ${tcy}\nocx: ${ocx}\nocy: ${ocy}\ndx: ${dx}\ndy: ${dy}\nexp: ${Math.abs(dx / w) > Math.abs(dy / h)}`);
-
                 if(Math.abs(dx / w) > Math.abs(dy / h)) {
                     return dx < 0 ? Direction.RIGHT : Direction.LEFT;
                 }

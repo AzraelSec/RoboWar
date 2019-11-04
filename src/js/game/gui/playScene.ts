@@ -1,6 +1,6 @@
 import { Goal } from './../goal';
 import { GameObject } from './../../physics/gameObject';
-import { Bomb, Missile } from './../obstacles/obstacle'; 
+import { Bomb, Missile, Mine } from './../obstacles/obstacle'; 
 import { Block } from './../obstacles/block';
 import { TextControl } from './../../graphics/controls/textBox';
 import { Player } from './../player';
@@ -40,12 +40,13 @@ export class PlayScene extends Scene {
 
         this.presentLevel = -1;
         this.levelScenePool = []
-        this.levelScenePool.push([player, /*bomb1, missile,*/ goal].concat(blocks));
+        this.levelScenePool.push([player, bomb1, missile, goal].concat(blocks));
         this.levelScenePool.push([
             new Player(new Vec2(400, 100), resourceManager, 0, canvas.width, canvas.height, () => sceneManager.setScene('gameover'), () => this.nextLevel()),
             new Block(new Vec2(598, canvas.height - 300), resourceManager),
             new Bomb(new Vec2(800, canvas.height - 300), resourceManager),
-            new Goal(new Vec2(700, 700), resourceManager)
+            new Goal(new Vec2(700, 700), resourceManager),
+            new Mine(new Vec2(600, 100), resourceManager)
         ]);
         this.levelScenePool.push([
             new Player(new Vec2(700, 100), resourceManager, 0, canvas.width, canvas.height, () => sceneManager.setScene('gameover'), () => this.nextLevel()),

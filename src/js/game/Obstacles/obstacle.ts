@@ -19,14 +19,36 @@ export class Obstacle extends GameObject {
 export class Bomb extends Obstacle {
     public static BOMB_VELOCITY: number = 0.2;
     constructor(initPosition: Vec2, resourceManager: ResourceManager) {
-        super(initPosition, new Vec2(0, Bomb.BOMB_VELOCITY), resourceManager, true);
-        this._image = new Animation(resourceManager.getResource('one'), 10);
+        super(initPosition, new Vec2(-Bomb.BOMB_VELOCITY, Bomb.BOMB_VELOCITY), resourceManager, true);
+        this._image = new Animation(resourceManager.getResource('bomb'), 10);
     }
 
     public update(time: number): void {
         const position = this.getPosition(time);
         const goingUp: boolean = this.getVelocity().y < 0;
         if(Math.abs(position.y - this._initPosition.y) > 100)
+            this.setVelocity(time, this.getVelocity().x, goingUp ? Bomb.BOMB_VELOCITY : -Bomb.BOMB_VELOCITY);
+        if(Math.abs(position.x - this._initPosition.x) > 50)
+            this.setVelocity(time, goingUp ? Bomb.BOMB_VELOCITY : -Bomb.BOMB_VELOCITY, this.getVelocity().y);
+        
+    }
+
+    public get width() {
+        return this._image.width * 0.6;
+    }
+}
+
+export class Mine extends Obstacle {
+    public static BOMB_VELOCITY: number = 0.2;
+    constructor(initPosition: Vec2, resourceManager: ResourceManager) {
+        super(initPosition, new Vec2(0, Bomb.BOMB_VELOCITY), resourceManager, true);
+        this._image = new Animation(resourceManager.getResource('mine'), 10);
+    }
+
+    public update(time: number): void {
+        const position = this.getPosition(time);
+        const goingUp: boolean = this.getVelocity().y < 0;
+        if(Math.abs(position.y - this._initPosition.y) > 200)
             this.setVelocity(time, this.getVelocity().x, goingUp ? Bomb.BOMB_VELOCITY : -Bomb.BOMB_VELOCITY);
     }
 
