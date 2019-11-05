@@ -2,7 +2,7 @@ import { DrawableControl } from './../../graphics/controls/control';
 import { OneShotAnimation } from './../../graphics/representations/oneShotAnimation';
 import { TextControl } from './../../graphics/controls/textBox';
 import { StaticSprite } from './../../graphics/representations/staticSprite';
-import { TwoWayButton, ButtonResource } from './../../graphics/controls/button';
+import { TwoWayButton, ButtonResource, TextButton } from './../../graphics/controls/button';
 import { SceneManager } from './../scene/sceneManager';
 import { ResourceManager } from './../../graphics/resourceLoader';
 import { Scene } from './../scene/scene';
@@ -13,13 +13,9 @@ export class GameOverScene extends Scene {
     private _robotAnimation: OneShotAnimation;
 
     constructor(document: Document, canvas: Canvas, resourceManager: ResourceManager, sceneManager: SceneManager) {
-        let buttonResource = <ButtonResource> {
-            normal: new StaticSprite(resourceManager.getResource('replay_button_1')),
-            pressed: new StaticSprite(resourceManager.getResource('replay_button_2'))
-        };
-        let replayButton = new TwoWayButton(new Vec2((canvas.width - buttonResource.normal.width) * 0.5, (canvas.height - buttonResource.normal.height) * 0.5 - 300), buttonResource, () => {
-            sceneManager.setScene('play');
-        });
+
+        let button_background = resourceManager.getResource('time_background');
+        let sprite_normal = new StaticSprite(button_background);
 
         let robotSprite = new OneShotAnimation(resourceManager.getResource('dead'), 9, 1.2, 0.3);
         let deadRobot = new DrawableControl(new Vec2(canvas.width - robotSprite.width, canvas.height - robotSprite.height), robotSprite);
@@ -28,9 +24,14 @@ export class GameOverScene extends Scene {
         let textboxHeight = 600;
         
         super(document, canvas, resourceManager.getDrawable('menu_background'), [
-            replayButton,
+            new TextButton(new Vec2((canvas.width - sprite_normal.width) * 0.5, (canvas.height - sprite_normal.height) * 0.5 - 300), sprite_normal, 'Replay', () => {
+                sceneManager.setScene('play')
+            }),
+            new TextButton(new Vec2((canvas.width - sprite_normal.width) * 0.5, (canvas.height - sprite_normal.height) * 0.5 - 100), sprite_normal, 'Menu', () => {
+                sceneManager.setScene('start')
+            }),
             deadRobot,
-            new TextControl(new Vec2((canvas.width - textboxWidth) * 0.5, (canvas.height - textboxHeight) * 0.5), textboxWidth, textboxHeight, 'Game Over')
+            new TextControl(new Vec2((canvas.width - textboxWidth) * 0.5, (canvas.height - textboxHeight) * 0.5 + 200), textboxWidth, textboxHeight, 'Game Over')
         ],);
         this._robotAnimation = robotSprite;
     }

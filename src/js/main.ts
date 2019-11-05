@@ -12,10 +12,10 @@ const resourceManager = new ResourceManager([
     'player/idle', 'player/run', 'player/jump', 'player/dead', 'shot',
     'background', 'menu_background',
     'red_barrel', 'goal',
-    'gui/play_button_1', 'gui/play_button_2', 'gui/start_button',
+    'gui/play_button_1', 'gui/play_button_2',
     'gui/menu_button_1', 'gui/menu_button_2',
     'gui/replay_button_1', 'gui/replay_button_2',
-    'gui/time_background', 'block',
+    'gui/time_background', 'block', 'long_block', 'box',
     'obstacles/bomb', 'obstacles/mine', 'obstacles/missile_one'
 ]);
 
