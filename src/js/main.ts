@@ -1,3 +1,4 @@
+import { EditorScene } from './game/gui/editorScene';
 import { LevelsManager } from './game/level/levelManager';
 import { WinScene } from './game/gui/winScene';
 import { GameOverScene } from './game/gui/gameOverScene';
@@ -28,17 +29,20 @@ resourceManager.resourcesPrefetch().then(() => {
     
     const canvas = new Canvas('scene');
     const sceneManager = new SceneManager();
+    const levelManager = new LevelsManager();
 
     sceneManager.addScene(<SceneFrame> { 
         name: 'start', scene: new StartScene(document, canvas, resourceManager, sceneManager)
     }).addScene(<SceneFrame> {
-        name: 'play', scene: new PlayScene(document, canvas, resourceManager, sceneManager)
+        name: 'play', scene: new PlayScene(document, canvas, resourceManager, sceneManager, levelManager)
     }).addScene(<SceneFrame> {
         name: 'gameover', scene: new GameOverScene(document, canvas, resourceManager, sceneManager)
     }).addScene(<SceneFrame> {
         name: 'win', scene: new WinScene(document, canvas, resourceManager, sceneManager)
-    })
+    }).addScene(<SceneFrame> {
+        name: 'editor', scene: new EditorScene(document, canvas, resourceManager)
+    });
 
-    sceneManager.setScene('start');
+    sceneManager.setScene('editor');
     sceneManager.start();
 }).catch((e: Error) => alert(`Error during resources prefetching: ${e.stack}`));

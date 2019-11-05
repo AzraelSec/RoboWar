@@ -28,6 +28,11 @@ export class Control implements InputHandler {
         return this._height;
     }
 
+    public resize(width: number, height: number): void {
+        this._width = width;
+        this._height = height;
+    }
+
     protected isIn(x: number, y: number): boolean {
         return this._position.x < x  && 
         x < this._position.x + this._width && 
@@ -38,7 +43,11 @@ export class Control implements InputHandler {
     public inputAttach(documentReference: Document): InputHandlerTrack[] {
         return [];
     }
-    public inputDetach(documentReference: Document): void {}
+
+    public set position(position: Vec2) {
+        this._position.x = position.x;
+        this._position.y = position.y;
+    }
 }
 
 export class DrawableControl extends Control {
@@ -50,7 +59,11 @@ export class DrawableControl extends Control {
     }
 
     public drawControl(context: CanvasRenderingContext2D): void {
-        this._image.draw(context, this._position.x, this._position.y, false);
+        context.save();
+        context.translate(this._position.x, this._position.y)
+        context.scale(this._width / this._image.width, this._height / this._image.height);
+        this._image.draw(context, 0/*this._position.x*/, 0/*this._position.y*/, false);
+        context.restore();
     }
 
     protected changeRepresentation(newRepresentation: IDrawable): void {

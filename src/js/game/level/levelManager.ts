@@ -4,36 +4,27 @@ import { Level } from './level';
 export class LevelsManager {
     protected _levelsPool: Level[];
     protected _presentLevel: number;
-    protected _levelParser: LevelParser;
     protected _storage: Storage;
 
-    constructor(levelParser: LevelParser) {
+    constructor() {
         this._levelsPool = [];
-        this._presentLevel = 0;
         this._storage = window.localStorage;
-        this._levelParser = levelParser;
     }
 
-    public addLevel(level: Level | string): void {
-        this._levelsPool.push(typeof level === 'string' ? this._levelParser.parseLevel(level) : level);
-        //this._storage.setItem(level.id.toString(), level.toJSON());
+    public addLevel(level: Level): void {
+        this._levelsPool.push(level);
     }
 
-    public get playingLevel(): Level {
-        return this._levelsPool[this._presentLevel];
-    }
-
-    public set actualLevel(value: number) {
-        this._presentLevel = value;
+    public getLevel(id: number) {
+        return this._levelsPool[id];
     }
 
     public get levelsNumber(): number {
         return this._levelsPool.length;
     }
 
-    public setBestTime(time: number): void {
-        const level: Level = this.playingLevel
+    public setBestTime(index:number, time: number): void {
+        const level: Level = this.getLevel(index);
         level.bestTime = time;
-        //this._storage.setItem(level.id.toString(), level.toJSON());
     }
 }
