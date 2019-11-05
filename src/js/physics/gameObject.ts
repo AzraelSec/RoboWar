@@ -1,10 +1,18 @@
-import { Level } from './../game/level/level';
+import { LevelParser } from './../game/level/levelParser';
 import { ResourceManager } from './../graphics/resourceLoader';
 import { Obstacle } from './../game/obstacles/obstacle';
 import { InputHandler, InputHandlerTrack } from './../game/inputHandler';
 import { Vec2 } from './vec2';
 import { IDrawable } from '../graphics/representations/drawable';
-import { JSONObjectType } from '../game/level/levelParser';
+//import { JSONObjectType } from '../game/level/levelParser';
+
+/*export interface JSONGameObject {
+    type: JSONObjectType;
+    position: {
+        x: number;
+        y: number;
+    }
+}*/
 
 export interface IPhysical {
     setVelocity(time:number, newX: number, newY: number): void;
@@ -152,12 +160,14 @@ export class GameObject implements IPhysical, InputHandler {
             }
         return null;
     }
-}
 
-export interface JSONGameObject {
-    type: JSONObjectType;
-    position: {
-        x: number;
-        y: number;
-    }
+    /*public toJSON(): JSONGameObject {
+        return <JSONGameObject> {
+            type: LevelParser.parseObjectType(this),
+            position: {
+                x: this._originalPosition.x,
+                y: this._originalPosition.y
+            }
+        }
+    }*/
 }

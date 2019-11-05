@@ -11,7 +11,7 @@ export class ContainerControl extends Control {
     protected _orientation: ContainerOrientation;
     protected _background: StaticSprite;
 
-    constructor(position: Vec2, width: number, height: number, controls?: Control[], resourceManager: ResourceManager, orientation ?: ContainerOrientation) {
+    constructor(position: Vec2, width: number, height: number, resourceManager: ResourceManager, controls?: Control[], orientation ?: ContainerOrientation) {
         super(position, width, height);
         this._controls = controls;
         this._orientation = orientation || 'horizontal';

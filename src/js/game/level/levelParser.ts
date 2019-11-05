@@ -1,8 +1,9 @@
+import { Level } from './level';
 import { LongBlock, Box } from './../obstacles/block';
 import { Player } from './../player';
 import { Canvas } from './../../graphics/canvas';
 import { Goal } from './../goal';
-import { Bomb, Missile } from './../obstacles/obstacle';
+import { Bomb, Missile, Mine } from './../obstacles/obstacle';
 import { SceneManager } from './../scene/sceneManager';
 import { ResourceManager } from './../../graphics/resourceLoader';
 import { GameObject } from '../../physics/gameObject';
@@ -11,9 +12,8 @@ import { Vec2 } from '../../physics/vec2';
 
 export enum JSONObjectType {
     PLAYER, 
-    MISSILE, 
-    BOMB,
-    BLOCK, LONG_BLOCK, MOVING_BOX,
+    MISSILE, BOMB, MINE,
+    BLOCK, LONG_BLOCK, BOX,
     GOAL, 
 }
 
@@ -45,7 +45,7 @@ export class LevelParser {
         this._winAction = winAction;
     }
 
-    public parseLevel(rawJSON: string): GameObject[] {
+    public parseLevel(rawJSON: string): Level {
         const levelObjects: GameObject[] = [];
         const data: LevelJSON = <LevelJSON> JSON.parse(rawJSON);
         
@@ -55,10 +55,12 @@ export class LevelParser {
                 levelObjects.push(new Block(new Vec2(object.position.x, object.position.y), this._resourceManager));
             else if(object.type === JSONObjectType.LONG_BLOCK)
                 levelObjects.push(new LongBlock(new Vec2(object.position.x, object.position.y), this._resourceManager));
-            else if(object.type === JSONObjectType.MOVING_BOX)
+            else if(object.type === JSONObjectType.BOX)
                 levelObjects.push(new Box(new Vec2(object.position.x, object.position.y), this._resourceManager));
             else if(object.type === JSONObjectType.BOMB)
                 levelObjects.push(new Bomb(new Vec2(object.position.x, object.position.y), this._resourceManager));
+            else if(object.type === JSONObjectType.MINE)
+                levelObjects.push(new Mine(new Vec2(object.position.x, object.position.y), this._resourceManager));
             else if(object.type === JSONObjectType.GOAL)
                 levelObjects.push(new Goal(new Vec2(object.position.x, object.position.y), this._resourceManager));
             else if(object.type === JSONObjectType.MISSILE)
@@ -66,7 +68,18 @@ export class LevelParser {
             else if(object.type === JSONObjectType.PLAYER)
                 levelObjects.push(new Player(new Vec2(object.position.x, object.position.y), this._resourceManager, null, this._canvas.width, this._canvas.height, this._gameoverAction, this._winAction))
         }
+        return Level.createLevel(levelObjects);
+    }
 
-        return levelObjects;
+    public static parseObjectType(object: GameObject): JSONObjectType {
+        if(object instanceof Missile) return JSONObjectType.MISSILE;
+        else if (object instanceof Bomb) return JSONObjectType.BOMB;
+        else if(object instanceof Block) return JSONObjectType.BLOCK;
+        else if(object instanceof LongBlock) return JSONObjectType.LONG_BLOCK;
+        else if(object instanceof Box) return JSONObjectType.BOX;
+        else if(object instanceof Mine) return JSONObjectType.MINE;
+        else if(object instanceof Player) return JSONObjectType.PLAYER; 
+        else if(object instanceof Goal) return JSONObjectType.GOAL;
+        
     }
 }

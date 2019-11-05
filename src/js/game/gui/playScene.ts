@@ -1,4 +1,5 @@
-import { LevelParser } from './../level/levelParser';
+import { LevelsManager } from './../level/levelManager';
+import { LevelParser, JSONObjectType } from './../level/levelParser';
 import { Goal } from './../goal';
 import { GameObject } from './../../physics/gameObject';
 import { Bomb, Missile, Mine } from './../obstacles/obstacle'; 
@@ -16,15 +17,17 @@ export class PlayScene extends Scene {
     protected presentLevel: number;
     protected sceneManager: SceneManager;
     protected levelParser: LevelParser;
+    protected levelManager: LevelsManager;
 
     protected timeText: TextControl;
-    protected lifeCountText: TextControl;
-    protected lifeCount: number;
+    protected bestTimeText: TextControl;
+    protected timeCounter: number;
     protected shotsRequests: Vec2[];
 
     constructor(document: Document, canvas: Canvas, resourceManager: ResourceManager, sceneManager: SceneManager) {
         let timeText = new TextControl(new Vec2(0, 5), 300, 70, `Time: 0`, resourceManager.getDrawable('time_background'));
-        super(document, canvas, resourceManager.getDrawable('menu_background'), [timeText]);
+        let bestTimeText = new TextControl(new Vec2(timeText.width, 5), 300, 70, `Best: -`, resourceManager.getDrawable('time_background'));
+        super(document, canvas, resourceManager.getDrawable('menu_background'), [timeText, bestTimeText]);
         
         this.levelParser = new LevelParser(resourceManager, sceneManager, canvas, () => {
             this.reset()
@@ -32,107 +35,57 @@ export class PlayScene extends Scene {
             sceneManager.setScene('gameover');
         }, () => this.nextLevel());
 
+        this.levelManager = new LevelsManager(this.levelParser);
         const shotsRequests: Vec2[] = [];
 
-        this.levelScenePool = []
-       this.levelScenePool.push(this.levelParser.parseLevel(`
+       this.levelManager.addLevel(`
         {
             "id": 1,
             "objects": [
                 {
-                    "type": 0,
+                    "type": ${JSONObjectType.PLAYER},
                     "position": {
                         "x": 200,
                         "y": 200
                     }
                 },
                 {
-                    "type": 4,
+                    "type": ${JSONObjectType.GOAL},
                     "position": {
-                        "x": 800,
-                        "y": 500
-                    }
-                },
-                {
-                    "type": 4,
-                    "position": {
-                        "x": 300,
+                        "x": 500,
                         "y": 200
                     }
-                },
-                {
-                    "type": 6,
-                    "position": {
-                        "x": 0,
-                        "y": 600
-                    }
                 }
             ]
         }
-       `))
-       this.levelScenePool.push(this.levelParser.parseLevel(`
-        {
-            "id": 2,
-            "objects": [
-                {
-                    "type": 0,
-                    "position": {
-                        "x": 100,
-                        "y": 400
-                    }
-                },
-                {
-                    "type": 3,
-                    "position": {
-                        "x": 800,
-                        "y": 300
-                    }
-                },
-                {
-                    "type": 3,
-                    "position": {
-                        "x": 100,
-                        "y": 300
-                    }
-                },
-                {
-                    "type": 2,
-                    "position": {
-                        "x": 400,
-                        "y": 100
-                    }
-                },
-                {
-                    "type": 6,
-                    "position": {
-                        "x": 700,
-                        "y": 300
-                    }
-                }
-            ]
-        }
-       `))
+       `);
         
         this.timeText = timeText;
         this.sceneManager = sceneManager;
+        this.bestTimeText = bestTimeText;
         this.shotsRequests = shotsRequests;
-
+        this.timeCounter = 0;
+        
         this.reset();
     }
     
     public play(newTime: number): void {
         super.play(newTime);
-        this.timeText.changeText(`Time: ${Math.trunc((newTime - this._fistUpdate) / 1000)}`);
+        this.timeCounter = Math.round((newTime - this._fistUpdate) / 1000 * 100) / 100;
+        this.timeText.changeText(`Time: ${Math.trunc(this.timeCounter)}`);
+        this.bestTimeText.changeText(`Best: ${this.levelManager.playingLevel.bestTime < Number.MAX_VALUE ? this.levelManager.playingLevel.bestTime : '-'}`)
     }
 
     protected nextLevel(): void {
-        if(this.presentLevel < this.levelScenePool.length - 1) {
+        if(this.timeCounter < this.levelManager.playingLevel.bestTime)
+            this.levelManager.setBestTime(this.timeCounter);
+        console.log(`Best Time: ${this.levelManager.playingLevel.bestTime}`)
+        if(this.levelManager.actualLevel < this.levelManager.levelsNumber - 1) {
             this.finalize();
             this._objects = [];
-            this.presentLevel++;
-            for(let ent of this.levelScenePool[this.presentLevel]) {
+            this.levelManager.actualLevel++;
+            for(let ent of this.levelManager.playingLevel.objects)
                 this.mapObject(ent);
-            }
             this.initialize();
         } else {
             this.reset();
@@ -141,8 +94,8 @@ export class PlayScene extends Scene {
     }
 
     protected reset(): void {
-        this.presentLevel = 0;
+        this.levelManager.actualLevel = 0;
         this._objects = [];
-        for(let ent of this.levelScenePool[this.presentLevel]) this.mapObject(ent);
+        for(let ent of this.levelManager.playingLevel.objects) this.mapObject(ent);
     }
 }

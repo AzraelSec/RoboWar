@@ -1,3 +1,4 @@
+import { LevelsManager } from './game/level/levelManager';
 import { WinScene } from './game/gui/winScene';
 import { GameOverScene } from './game/gui/gameOverScene';
 import { PlayScene } from './game/gui/playScene';
@@ -6,6 +7,8 @@ import { Scene, } from './game/scene/scene';
 import { ResourceManager } from './graphics/resourceLoader';
 import { Canvas } from './graphics/canvas'
 import { StartScene } from './game/gui/startScene';
+import { Level } from './game/level/level';
+import { JSONObjectType, LevelParser } from './game/level/levelParser';
 
 //Resource Targeting
 const resourceManager = new ResourceManager([
@@ -24,7 +27,7 @@ resourceManager.resourcesPrefetch().then(() => {
     console.log('Resource loaded');
     
     const canvas = new Canvas('scene');
-    let sceneManager = new SceneManager();
+    const sceneManager = new SceneManager();
 
     sceneManager.addScene(<SceneFrame> { 
         name: 'start', scene: new StartScene(document, canvas, resourceManager, sceneManager)
