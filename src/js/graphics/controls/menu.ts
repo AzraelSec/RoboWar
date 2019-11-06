@@ -1,7 +1,6 @@
 import { StaticSprite } from './../representations/staticSprite';
 import { InputHandlerTrack } from '../../game/inputHandler';
 import { TwoWayButton, OneWayButton } from './button';
-import { Background } from '../canvas';
 import { ResourceManager } from '../resourceLoader';
 import { Control, DrawableControl } from './control';
 import { Vec2 } from '../../physics/vec2';
@@ -20,24 +19,24 @@ export class MenuControl extends Control {
 
     constructor(position: Vec2, width: number, height: number, resourceManager: ResourceManager, controls?: TwoWayButton[]) {
         super(position, width, height);
-        this._closed = false;
+        this._closed = true;
         this._background = new StaticSprite(resourceManager.getResource('menu_background'));
         this._controls = [].concat(controls);
         
-        for(let index in this._controls) {
-            this._controls[index].position = new Vec2(this._position.x + (this.width - MenuControl.CELL_WIDTH) * 0.5, this._position.y + 150+ Number(index) * MenuControl.CELL_HEIGHT)
+        for(let index in this._controls) 
             this._controls[index].resize(MenuControl.CELL_WIDTH, MenuControl.CELL_HEIGHT);
-        }
+        
         this._closedPosition = new Vec2(World.VIEW_WIDTH - 120, World.VIEW_HEIGHT - 120);
         this._normalPosition = new Vec2(position.x, position.y);
-        this._closingButton = new OneWayButton(new Vec2(this._position.x + (this.width - MenuControl.CELL_WIDTH) * 0.5, this._position.y + 25), new StaticSprite(resourceManager.getResource('replay_button_1'), 0.4), () => this._closed ? this.open() : this.close())
+        this._closingButton = new OneWayButton(Vec2.Zero(), new StaticSprite(resourceManager.getResource('replay_button_1'), 0.4), () => this._closed ? this.open() : this.close())
+        this.adjustButtonsPosition();
+        this.position = this._closedPosition;
         this._controls.push(this._closingButton);
     }
     
     public drawControl(context: CanvasRenderingContext2D): void {
         context.save();
         this._background.draw(context, this._position.x, this._position.y, false);
-        //context.fillRect(this._position.x, this._position.y, this.width, this.height)
         for(let index in this._controls)
             this._controls[index].drawControl(context);
         context.restore();
@@ -52,11 +51,7 @@ export class MenuControl extends Control {
     public set position(position: Vec2) {
         this._position.x = position.x;
         this._position.y = position.y;
-        for(let index in this._controls)
-            if(this._controls[index] !== this._closingButton)
-                this._controls[index].position = new Vec2(this._position.x + (this.width - MenuControl.CELL_WIDTH) * 0.5, this._position.y + 150+ Number(index) * MenuControl.CELL_HEIGHT)
-        
-        this._closingButton.position = new Vec2(this._position.x + (this.width - 100) * 0.5, this._position.y + 25);
+        this.adjustButtonsPosition();
     }
 
     protected close(): void {
@@ -67,5 +62,13 @@ export class MenuControl extends Control {
     protected open(): void {
         this._closed = false;
         this.position = this._normalPosition;
+    }
+
+    private adjustButtonsPosition() {
+        for(let index in this._controls)
+            if(this._controls[index] !== this._closingButton)
+                this._controls[index].position = new Vec2(this._position.x + (this.width - MenuControl.CELL_WIDTH) * 0.5, this._position.y + 150+ Number(index) * MenuControl.CELL_HEIGHT)
+        
+        this._closingButton.position = new Vec2(this._position.x + (this.width - 100) * 0.5, this._position.y + 25);
     }
 }

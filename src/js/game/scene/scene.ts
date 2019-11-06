@@ -6,11 +6,10 @@ import { Canvas } from '../../graphics/canvas';
 import { World } from '../world';
 import { Obstacle } from '../obstacles/obstacle';
 import { Player } from '../player';
-import { Shot } from '../shot';
+import { Goal } from '../goal';
 
 export class Scene {
     protected _objects: GameObject[];
-    protected _shots: Shot[];
     protected _player: Player;
     protected _obstacles: Obstacle[];
     protected _controls: Control[];
@@ -28,7 +27,6 @@ export class Scene {
 
         this._player = null;
         this._obstacles = [];
-        this._shots = [];
         this._lastUpdate = 0;
         this._fistUpdate = null;
         this._canvas = canvas;
@@ -43,8 +41,7 @@ export class Scene {
         if(object instanceof Control) this._controls.push(object);
         else if(object instanceof GameObject) this._objects.push(object);
 
-        if(object instanceof Shot) this._shots.push(object);
-        else if(object instanceof Player) this._player = object;
+        if(object instanceof Player) this._player = object;
         else if(object instanceof Obstacle) this._obstacles.push(object);
     }
 
@@ -60,9 +57,14 @@ export class Scene {
                 if(!(this._objects[i] instanceof Player))
                     this._objects[i].update(newTime);
 
+                    
             //Player updating
-            if(this._player)
-                this._player.update(newTime, this.getCollisions(newTime, this._player));
+            if(this._player) {
+                const collidingObjects = this.getCollisions(newTime, this._player);
+                if(collidingObjects.some(object => object.collider.deadly)) this.dyingAction();
+                else if(collidingObjects.some(object => object.collider instanceof Goal)) this.succeedingAction();
+                else this._player.update(newTime, this.getCollisions(newTime, this._player));
+            }
                 
             //Drawing the objects
             this._canvas.clear(this._background);
@@ -90,7 +92,7 @@ export class Scene {
             this._document.removeEventListener(this._eventsListeners[i].type, this._eventsListeners[i].callback);
     }
 
-    protected getCollisions(time: number, object: GameObject): CollisionScaffold[] {
+    private getCollisions(time: number, object: GameObject): CollisionScaffold[] {
         const colliding: CollisionScaffold[] = [];
         if(object) {
             for(let obj of this._objects)
@@ -105,5 +107,8 @@ export class Scene {
         }
         return colliding;
     }
+
+    protected dyingAction(): void { }
+    protected succeedingAction(): void { }
 
 }

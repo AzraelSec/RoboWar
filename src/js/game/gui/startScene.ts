@@ -25,7 +25,7 @@ export class StartScene extends Scene {
             new TextButton(new Vec2(World.horizontalCenter(sprite_normal), World.verticalCenter(sprite_normal)), sprite_normal, 'start', () => {
                 sceneManager.setScene('play')
             }),
-            new TextButton(new Vec2(World.horizontalCenter(sprite_normal), World.verticalCenter(sprite_normal) + 200), sprite_normal, 'editor', () => {
+            new TextButton(new Vec2(World.horizontalCenter(sprite_normal), World.verticalCenter(sprite_normal) + sprite_normal.height), sprite_normal, 'editor', () => {
                 sceneManager.setScene('editor')
             }),
             new TextControl(new Vec2((canvas.width - textboxWidth) * 0.5, (canvas.height - textboxHeight) * 0.5 - 200), textboxWidth, textboxHeight, 'RoboWar'),

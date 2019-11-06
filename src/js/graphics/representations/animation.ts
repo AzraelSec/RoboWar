@@ -1,7 +1,7 @@
 import { IDrawable } from './drawable';
 import { Resource } from '../resourceLoader';
 
-export class Animation implements IDrawable{
+export class Animation implements IDrawable {
     protected _spritesheet: Resource;
     protected _width: number;
     protected _height: number;
@@ -16,7 +16,7 @@ export class Animation implements IDrawable{
         this._width = resource.content.width / framesNumber;
         this._framesNumber = framesNumber;
         this._tickCounter = 0; 
-        this._scaleFactor = scaleFactor || 0.4;
+        this._scaleFactor = scaleFactor || 1;
         this._speedFactor = speedFactor ? this.normSpeedFactor(speedFactor) : this._scaleFactor;
     }
 

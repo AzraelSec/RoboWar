@@ -1,7 +1,8 @@
+import { Goal } from './../goal';
 import { SceneManager } from './../scene/sceneManager';
 import { LevelsManager } from './../level/levelManager';
-import { Bomb, Missile } from './../obstacles/obstacle';
-import { Block, Box } from './../obstacles/block';
+import { Bomb, Missile, Mine } from './../obstacles/obstacle';
+import { Block, Box, LongBlock } from './../obstacles/block';
 import { Player } from './../player';
 import { InputHandlerTrack } from './../inputHandler';
 import { World } from './../world';
@@ -14,62 +15,79 @@ import { Scene } from './../scene/scene';
 import { Vec2 } from '../../physics/vec2';
 import { StaticSprite } from '../../graphics/representations/staticSprite';
 import { JSONGameObject } from '../../physics/gameObject';
-import { Level } from '../level/level';
 
 export class EditorScene extends Scene {
     private static _menuWidth: number = 150;
-    protected selectedObject: JSONObjectType;
-    private levelObjects: JSONGameObject[];
-    private objectsSprite: StaticSprite[];
+    protected _selectedObject: JSONObjectType;
+    private _levelObjects: JSONGameObject[];
+    private _objectsSprite: StaticSprite[];
+    protected _levelsManager: LevelsManager;
 
-    constructor(document: Document, canvas: Canvas, resourceManager: ResourceManager, sceneManager: SceneManager) {
+    constructor(document: Document, canvas: Canvas, resourceManager: ResourceManager, sceneManager: SceneManager, levelsManager: LevelsManager) {
         const sprites: StaticSprite[] = [
-            new StaticSprite(resourceManager.getResource('missile_static')),
-            new StaticSprite(resourceManager.getResource('bomb_static')),
-            new StaticSprite(resourceManager.getResource('bomb_static')),
-            new StaticSprite(resourceManager.getResource('block')),
-            new StaticSprite(resourceManager.getResource('block')),
-            new StaticSprite(resourceManager.getResource('box')),
-            new StaticSprite(resourceManager.getResource('goal'))
+            new StaticSprite(resourceManager.getResource('player_static'), Player.SCALE),
+            new StaticSprite(resourceManager.getResource('missile_static'), Missile.SCALE),
+            new StaticSprite(resourceManager.getResource('bomb_static'), Mine.SCALE),
+            new StaticSprite(resourceManager.getResource('mine_static'), Mine.SCALE),
+            new StaticSprite(resourceManager.getResource('block'), Block.SCALE),
+            new StaticSprite(resourceManager.getResource('long_block'), LongBlock.SCALE),
+            new StaticSprite(resourceManager.getResource('box'), Box.SCALE),
+            new StaticSprite(resourceManager.getResource('goal'), Goal.SCALE)
         ];
 
         const menu: MenuControl = new MenuControl(new Vec2(World.VIEW_WIDTH - EditorScene._menuWidth, World.WORLD_HEIGHT + 50), EditorScene._menuWidth, World.VIEW_HEIGHT, resourceManager, [
             new OneWayButton(
-                Vec2.Zero(), sprites[JSONObjectType.MISSILE], () => {this.selectedObject = JSONObjectType.MISSILE;console.debug(JSON.stringify(this.selectedObject))}
+                Vec2.Zero(), sprites[JSONObjectType.PLAYER], () => this._selectedObject = JSONObjectType.PLAYER
             ),
             new OneWayButton(
-                Vec2.Zero(), sprites[JSONObjectType.BOMB], () => {this.selectedObject = JSONObjectType.BOMB; console.debug(JSON.stringify(this.selectedObject))}
+                Vec2.Zero(), sprites[JSONObjectType.MISSILE], () => this._selectedObject = JSONObjectType.MISSILE
             ),
             new OneWayButton(
-                Vec2.Zero(), sprites[JSONObjectType.BLOCK], () => {this.selectedObject = JSONObjectType.BLOCK; console.debug(JSON.stringify(this.selectedObject))}
+                Vec2.Zero(), sprites[JSONObjectType.BOMB], () => this._selectedObject = JSONObjectType.BOMB
             ),
             new OneWayButton(
-                Vec2.Zero(), sprites[JSONObjectType.BOX], () => {this.selectedObject = JSONObjectType.BOX; console.debug(JSON.stringify(this.selectedObject))}
+                Vec2.Zero(), sprites[JSONObjectType.MINE], () => this._selectedObject = JSONObjectType.MINE
             ),
-        ] )
+            new OneWayButton(
+                Vec2.Zero(), sprites[JSONObjectType.BLOCK], () => this._selectedObject = JSONObjectType.BLOCK
+            ),
+            new OneWayButton(
+                Vec2.Zero(), sprites[JSONObjectType.LONG_BLOCK], () => this._selectedObject = JSONObjectType.LONG_BLOCK
+            ),
+            new OneWayButton(
+                Vec2.Zero(), sprites[JSONObjectType.BOX], () => this._selectedObject = JSONObjectType.BOX
+            ),
+            new OneWayButton(
+                Vec2.Zero(), sprites[JSONObjectType.GOAL], () => this._selectedObject = JSONObjectType.GOAL
+            ),
+        ])
+        const buttonSprite: StaticSprite = new StaticSprite(resourceManager.getResource('time_background'), 0.5);
         super(document, canvas, resourceManager.getDrawable('main_background'), [
             menu,
-            new TextButton(Vec2.Zero(), new StaticSprite(resourceManager.getResource('time_background')), 'Save', () => {
-                localStorage.setItem('new', JSON.stringify(this.levelObjects));
-                this.levelObjects = []
+            new TextButton(Vec2.Zero(), buttonSprite, 'Save', () => {
+                levelsManager.addLevel(<LevelJSON> {
+                    id: 1,
+                    objects: this._levelObjects
+                });
+                this._levelObjects = [];
+                sceneManager.setScene('start');
+            }),
+            new TextButton(new Vec2(buttonSprite.width, 0), buttonSprite, 'Back', () => {
+                this._levelObjects = []
                 sceneManager.setScene('start');
             })
         ]);
 
-        this.selectedObject = null;
-        this.levelObjects = [];
-        this.objectsSprite = sprites;
+        this._selectedObject = null;
+        this._levelObjects = [];
+        this._objectsSprite = sprites;
+        this._levelsManager = levelsManager;
     }
 
     public play(newTime: number): void {
         super.play(newTime);
-        for(let object of this.levelObjects) {
-            let scale = 1;
-            if(object.type === JSONObjectType.BLOCK) scale = Block.SCALE;
-            else if(object.type === JSONObjectType.BOX) scale = Box.SCALE;
-            
-            this._canvas.context.drawImage(this.objectsSprite[object.type].spritesheet, object.position.x, object.position.y, this.objectsSprite[object.type].width * scale, this.objectsSprite[object.type].height * scale)
-        }
+        for(let object of this._levelObjects)
+            this._canvas.context.drawImage(this._objectsSprite[object.type].spritesheet, object.position.x, object.position.y, this._objectsSprite[object.type].width, this._objectsSprite[object.type].height)
     }
 
     public initialize(): void {
@@ -77,20 +95,19 @@ export class EditorScene extends Scene {
         this._eventsListeners.push(<InputHandlerTrack> {
             type: 'mousedown', callback: this.addObject.bind(this)
         });
-        document.addEventListener('mousedown', this.addObject.bind(this));
+        window.addEventListener('mousedown', this.addObject.bind(this));
     }
 
     private addObject(event: MouseEvent): void {
-        if(this.selectedObject !== null) {
-            this.levelObjects.push(<LevelObjectJSON> {
-                type: this.selectedObject,
+        if(this._selectedObject !== null) {
+            this._levelObjects.push(<LevelObjectJSON> {
+                type: this._selectedObject,
                 position: {
-                    x: event.clientX,
-                    y: event.clientY
+                    x: event.clientX - this._objectsSprite[this._selectedObject].width * 0.5,
+                    y: event.clientY - this._objectsSprite[this._selectedObject].height * 0.5
                 }
             });
-            this.selectedObject = null;
+            this._selectedObject = null;
         }
     }
-
 }

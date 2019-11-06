@@ -1,18 +1,20 @@
-import { LevelParser } from './levelParser';
+import { ResourceManager } from './../../graphics/resourceLoader';
+import { LevelParser, LevelJSON } from './levelParser';
 import { Level } from './level';
 
 export class LevelsManager {
     protected _levelsPool: Level[];
     protected _presentLevel: number;
-    protected _storage: Storage;
+    protected _levelParser: LevelParser;
 
-    constructor() {
+    constructor(resourceManager: ResourceManager) {
         this._levelsPool = [];
-        this._storage = window.localStorage;
+        this._levelParser = new LevelParser(resourceManager);
     }
 
-    public addLevel(level: Level): void {
-        this._levelsPool.push(level);
+    public addLevel(level: Level | LevelJSON): void {
+        if(level instanceof Level) this._levelsPool.push(level);
+        else this._levelsPool.push(this._levelParser.parseLevel(level));
     }
 
     public getLevel(id: number) {

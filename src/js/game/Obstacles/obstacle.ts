@@ -4,6 +4,7 @@ import { Vec2 } from '../../physics/vec2';
 import { GameObject } from '../../physics/gameObject';
 
 export class Obstacle extends GameObject {
+    public static SCALE: number = 0.4;
     protected _deadly: boolean;
 
     constructor(initPosition: Vec2, initVelocity: Vec2, resourceManager: ResourceManager, deadly: boolean) {
@@ -20,7 +21,7 @@ export class Bomb extends Obstacle {
     public static BOMB_VELOCITY: number = 0.2;
     constructor(initPosition: Vec2, resourceManager: ResourceManager) {
         super(initPosition, new Vec2(-Bomb.BOMB_VELOCITY, Bomb.BOMB_VELOCITY), resourceManager, true);
-        this._image = new Animation(resourceManager.getResource('bomb'), 10);
+        this._image = new Animation(resourceManager.getResource('bomb'), 10, Bomb.SCALE);
     }
 
     public update(time: number): void {
@@ -42,7 +43,7 @@ export class Mine extends Obstacle {
     public static BOMB_VELOCITY: number = 0.2;
     constructor(initPosition: Vec2, resourceManager: ResourceManager) {
         super(initPosition, new Vec2(0, Bomb.BOMB_VELOCITY), resourceManager, true);
-        this._image = new Animation(resourceManager.getResource('mine'), 10);
+        this._image = new Animation(resourceManager.getResource('mine'), 10, Mine.SCALE);
     }
 
     public update(time: number): void {
@@ -61,7 +62,7 @@ export class Missile extends Obstacle {
     public static MISSILE_VELOCITY: number = 1;
     constructor(worldWidth: number, initHeight: number, resourceManager: ResourceManager) {
         super(new Vec2(worldWidth + 100, initHeight ), new Vec2(-Missile.MISSILE_VELOCITY, 0), resourceManager, true);
-        this._image = new Animation(resourceManager.getResource('missile_one'), 9);
+        this._image = new Animation(resourceManager.getResource('missile'), 9, Missile.SCALE);
     }
 
     public update(time: number): void {

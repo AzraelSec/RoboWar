@@ -1,3 +1,4 @@
+import { World } from './world';
 import { ResourceManager } from './../graphics/resourceLoader';
 import { Goal } from './goal';
 import { Block } from './obstacles/block';
@@ -14,20 +15,13 @@ import { OneShotAnimation } from '../graphics/representations/oneShotAnimation';
 enum MovementKeys {
     LEFT = 37,
     RIGHT = 39,
-    JUMP = 32,
-    SHOT = 17
+    JUMP = 32
 };
 
 interface MovementRequestState {
     left: boolean,
     right: boolean,
-    jump: boolean,
-    shot: boolean
-}
-
-type WorldBounds = {
-    width: number;
-    height: number;
+    jump: boolean
 }
 
 export enum PlayerStates {
@@ -80,12 +74,8 @@ export class Player extends FallingObject {
     private _playerActualMovement: MovementRequestState;
     private _playerMovementRequest: MovementRequestState;
 
-    private _dyingAction: () => void;
-    private _winningAction: () => void;
-    private _worldBounds: WorldBounds;
-
-    constructor(initPosition: Vec2, resourceManager: ResourceManager, firstUpdate: number, maxWidth: number, maxHeight: number, dyingAction: () => void, winningAction: () => void) {
-        super(initPosition, Vec2.Zero(), resourceManager, firstUpdate);
+    constructor(initPosition: Vec2, resourceManager: ResourceManager) {
+        super(initPosition, Vec2.Zero(), resourceManager, 0);
         this._playerState = PlayerStates.IDLING;
         this._playerStatesResources = new PlayerStatesResources(
             new Animation(resourceManager.getResource('run'), 9, Player.SCALE),
@@ -101,12 +91,6 @@ export class Player extends FallingObject {
             left: false, right: false,
             jump: false, shot: false
         };
-        this._worldBounds = {
-            width: maxWidth,
-            height: maxHeight
-        }
-        this._dyingAction = dyingAction;
-        this._winningAction = winningAction;
     }
 
     public update(time: number, colliding?: CollisionScaffold[]): void {
@@ -116,19 +100,14 @@ export class Player extends FallingObject {
         let onABrick = undefined !== colliding.find( obj => obj.side === Direction.BOTTOM && oldVelocity.y > 0)
         if (this._isFloating && onABrick) 
             this.bottomBoundsHitHandling();
-        else if(oldPosition.y < this._worldBounds.height - this.height) this._isFloating = true;
+        else if(oldPosition.y < World.VIEW_HEIGHT - this.height) this._isFloating = true;
         
         super.update(time);
         
-        if(colliding.some(object => object.collider.deadly))
-            this._dyingAction();
-        else if(colliding.some(object => object.collider instanceof Goal))
-            this._winningAction();
-        else {
-            this.collidingsHandling(time, colliding, oldPosition, oldVelocity);
-            this.boundsAdjustPosition(time);
-            this.manageInputRequests(time);
-        }
+        this.collidingsHandling(time, colliding, oldPosition, oldVelocity);
+        this.boundsAdjustPosition(time);
+        this.manageInputRequests(time);
+        
     }
 
     private changeState(newState: PlayerStates): void {
@@ -138,9 +117,6 @@ export class Player extends FallingObject {
             this._actualResource = this._playerStatesResources.getRelatedAnimation(newState);
             this.changeRepresentation(this._actualResource);
         }
-    }
-
-    private shotHandling(): void {
     }
 
     public reset() {
@@ -183,8 +159,8 @@ export class Player extends FallingObject {
         }
         if(lastPosition.x < 0) leftBounce(0);
         else if(lastPosition.y < 0) topBounce(0);
-        else if(lastPosition.x + this.width > this._worldBounds.width) rightBounce(this._worldBounds.width);
-        else if(lastPosition.y + this.height > this._worldBounds.height) bottomBounce(this._worldBounds.height);
+        else if(lastPosition.x + this.width > World.VIEW_WIDTH) rightBounce(World.VIEW_WIDTH);
+        else if(lastPosition.y + this.height > World.VIEW_HEIGHT) bottomBounce(World.VIEW_HEIGHT);
     }
 
     private bottomBoundsHitHandling(): void {
@@ -248,16 +224,8 @@ export class Player extends FallingObject {
             }
             this._playerMovementRequest.jump = false;
         }
-        if(this._playerMovementRequest.shot) {
-            if(!this._playerActualMovement.shot) {
-                this._playerActualMovement.shot = true;
-                this.shotHandling();
-            }
-            this._playerMovementRequest.shot = false;
-        }
 
-        if(!this._playerActualMovement.jump && !this._playerActualMovement.shot &&
-            !this._playerActualMovement.left && !this._playerActualMovement.right) {
+        if(!this._playerActualMovement.jump && !this._playerActualMovement.left && !this._playerActualMovement.right) {
                 this.setVelocity(time, 0, this._velocity.y);
             this.changeState(this._isFloating && this._playerActualMovement.jump ? PlayerStates.JUMPING : PlayerStates.IDLING);
         }
@@ -280,7 +248,6 @@ export class Player extends FallingObject {
             case MovementKeys.RIGHT: this._playerMovementRequest.right = true; break;
             case MovementKeys.LEFT: this._playerMovementRequest.left = true; break;
             case MovementKeys.JUMP: this._playerMovementRequest.jump = true; break;
-            case MovementKeys.SHOT: this._playerMovementRequest.shot = true; break;
         }
     }
 
@@ -288,7 +255,6 @@ export class Player extends FallingObject {
         switch(event.keyCode) {
             case MovementKeys.LEFT: this._playerActualMovement.left = this._playerMovementRequest.left = false; break;
             case MovementKeys.RIGHT: this._playerActualMovement.right = this._playerMovementRequest.right = false; break;
-            case MovementKeys.SHOT: this._playerActualMovement.shot = false; break;
         }
     }
 }

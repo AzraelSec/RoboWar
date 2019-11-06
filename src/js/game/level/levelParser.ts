@@ -1,10 +1,11 @@
+import { JSONGameObject } from './../../physics/gameObject';
+import { World } from './../world';
 import { Level } from './level';
 import { LongBlock, Box } from './../obstacles/block';
 import { Player } from './../player';
 import { Canvas } from './../../graphics/canvas';
 import { Goal } from './../goal';
 import { Bomb, Missile, Mine } from './../obstacles/obstacle';
-import { SceneManager } from './../scene/sceneManager';
 import { ResourceManager } from './../../graphics/resourceLoader';
 import { GameObject } from '../../physics/gameObject';
 import { Block } from '../obstacles/block';
@@ -32,25 +33,16 @@ export interface LevelJSON {
 
 export class LevelParser {
     private _resourceManager: ResourceManager;
-    private _sceneManager: SceneManager;
-    private _canvas: Canvas;
-    private _gameoverAction: () => void;
-    private _winAction: () => void;
 
-    constructor(resourceManager: ResourceManager, sceneManager: SceneManager, canvas: Canvas, gameoverAction: () => void, winAction: () => void) {
+    constructor(resourceManager: ResourceManager) {
         this._resourceManager = resourceManager;
-        this._sceneManager = sceneManager;
-        this._canvas = canvas;
-        this._gameoverAction = gameoverAction;
-        this._winAction = winAction;
     }
 
-    public parseLevel(rawJSON: string): Level {
+    public parseLevel(JSONObject: LevelJSON): Level {
         const levelObjects: GameObject[] = [];
-        const data: LevelJSON = <LevelJSON> JSON.parse(rawJSON);
         
-        for(let object of data.objects) {
-            object.position.y = (this._canvas.height - object.position.y)
+        for(let object of JSONObject.objects) {
+            //object.position.y = (World.VIEW_HEIGHT - object.position.y)
             if(object.type === JSONObjectType.BLOCK)
                 levelObjects.push(new Block(new Vec2(object.position.x, object.position.y), this._resourceManager));
             else if(object.type === JSONObjectType.LONG_BLOCK)
@@ -64,9 +56,9 @@ export class LevelParser {
             else if(object.type === JSONObjectType.GOAL)
                 levelObjects.push(new Goal(new Vec2(object.position.x, object.position.y), this._resourceManager));
             else if(object.type === JSONObjectType.MISSILE)
-                levelObjects.push(new Missile(this._canvas.width, object.position.y, this._resourceManager));
+                levelObjects.push(new Missile(World.VIEW_WIDTH, object.position.y, this._resourceManager));
             else if(object.type === JSONObjectType.PLAYER)
-                levelObjects.push(new Player(new Vec2(/*object.position.x*/0, /*object.position.y*/0), this._resourceManager, null, this._canvas.width, this._canvas.height, this._gameoverAction, this._winAction))
+                levelObjects.push(new Player(new Vec2(object.position.x, object.position.y), this._resourceManager))
         }
         return Level.createLevel(levelObjects);
     }
