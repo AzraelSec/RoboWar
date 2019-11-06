@@ -66,7 +66,7 @@ export class LevelParser {
             else if(object.type === JSONObjectType.MISSILE)
                 levelObjects.push(new Missile(this._canvas.width, object.position.y, this._resourceManager));
             else if(object.type === JSONObjectType.PLAYER)
-                levelObjects.push(new Player(new Vec2(object.position.x, object.position.y), this._resourceManager, null, this._canvas.width, this._canvas.height, this._gameoverAction, this._winAction))
+                levelObjects.push(new Player(new Vec2(/*object.position.x*/0, /*object.position.y*/0), this._resourceManager, null, this._canvas.width, this._canvas.height, this._gameoverAction, this._winAction))
         }
         return Level.createLevel(levelObjects);
     }

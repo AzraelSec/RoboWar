@@ -1,9 +1,9 @@
-import { OneWayButton, TextButton } from './../../graphics/controls/button';
+import { World } from './../world';
+import { TextButton } from './../../graphics/controls/button';
 import { Animation } from './../../graphics/representations/animation';
 import { ResourceManager } from '../../graphics/resourceLoader';
 import { Scene } from '../scene/scene';
 import { Canvas } from '../../graphics/canvas';
-import { ButtonResource, TwoWayButton } from '../../graphics/controls/button';
 import { StaticSprite } from '../../graphics/representations/staticSprite';
 import { Vec2 } from '../../physics/vec2';
 import { SceneManager } from '../scene/sceneManager';
@@ -21,12 +21,15 @@ export class StartScene extends Scene {
         let robot_resource = resourceManager.getResource('idle');
         let spriteRobot = new Animation(robot_resource, 9, 1.2, 0.4);
 
-        super(document, canvas, resourceManager.getDrawable('menu_background'), [
-            new TextButton(new Vec2((canvas.width - sprite_normal.width) * 0.5, (canvas.height - sprite_normal.height) * 0.5), sprite_normal, 'start', () => {
+        super(document, canvas, resourceManager.getDrawable('main_background'), [
+            new TextButton(new Vec2(World.horizontalCenter(sprite_normal), World.verticalCenter(sprite_normal)), sprite_normal, 'start', () => {
                 sceneManager.setScene('play')
             }),
+            new TextButton(new Vec2(World.horizontalCenter(sprite_normal), World.verticalCenter(sprite_normal) + 200), sprite_normal, 'editor', () => {
+                sceneManager.setScene('editor')
+            }),
             new TextControl(new Vec2((canvas.width - textboxWidth) * 0.5, (canvas.height - textboxHeight) * 0.5 - 200), textboxWidth, textboxHeight, 'RoboWar'),
-            new DrawableControl(new Vec2(0, (canvas.height - spriteRobot.height) * 0.5 + 200), spriteRobot),
+            new DrawableControl(new Vec2(0, World.alignBottom(spriteRobot) + 50), spriteRobot),
         ],);
     }
 }

@@ -40,4 +40,8 @@ export class StaticSprite implements IDrawable {
     public get height(): number {
         return this._height * this._scaleFactor;
     }
+
+    public get spritesheet(): HTMLImageElement {
+        return this._spritesheet.content;
+    }
 }

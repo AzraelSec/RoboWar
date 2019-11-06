@@ -1,3 +1,4 @@
+import { World } from './../../game/world';
 import { InputHandler, InputHandlerTrack } from './../../game/inputHandler';
 import { SceneManager } from '../../game/scene/sceneManager';
 import { IDrawable } from '../representations/drawable';
@@ -59,10 +60,12 @@ export class DrawableControl extends Control {
     }
 
     public drawControl(context: CanvasRenderingContext2D): void {
+        //const ratio = this._image.width > this._image.height ? this.width / this._image.width : this.height / this._image.height;
         context.save();
         context.translate(this._position.x, this._position.y)
-        context.scale(this._width / this._image.width, this._height / this._image.height);
-        this._image.draw(context, 0/*this._position.x*/, 0/*this._position.y*/, false);
+        //context.fillRect(0, 0, this._width, this._height)
+        context.scale(this.width / this._image.width, this.height / this._image.height);
+        this._image.draw(context, 0, 0, false);
         context.restore();
     }
 

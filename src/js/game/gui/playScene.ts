@@ -23,7 +23,7 @@ export class PlayScene extends Scene {
     constructor(document: Document, canvas: Canvas, resourceManager: ResourceManager, sceneManager: SceneManager, levelManager: LevelsManager) {
         let timeText = new TextControl(new Vec2(0, 5), 300, 70, `Time: 0`, resourceManager.getDrawable('time_background'));
         let bestTimeText = new TextControl(new Vec2(timeText.width, 5), 300, 70, `Best: -`, resourceManager.getDrawable('time_background'));
-        super(document, canvas, resourceManager.getDrawable('menu_background'), [timeText, bestTimeText]);
+        super(document, canvas, resourceManager.getDrawable('main_background'), [timeText, bestTimeText]);
         
         this.levelParser = new LevelParser(resourceManager, sceneManager, canvas, () => {
             this.reset()
@@ -32,28 +32,6 @@ export class PlayScene extends Scene {
         }, () => this.nextLevel());
 
         this.levelManager = levelManager;
-
-       this.levelManager.addLevel(this.levelParser.parseLevel(`
-        {
-            "id": 1,
-            "objects": [
-                {
-                    "type": ${JSONObjectType.PLAYER},
-                    "position": {
-                        "x": 200,
-                        "y": 200
-                    }
-                },
-                {
-                    "type": ${JSONObjectType.GOAL},
-                    "position": {
-                        "x": 500,
-                        "y": 200
-                    }
-                }
-            ]
-        }
-       `));
        this.levelManager.addLevel(this.levelParser.parseLevel(`
         {
             "id": 2,
@@ -121,5 +99,13 @@ export class PlayScene extends Scene {
         this.playingLevel = 0;
         this._objects = [];
         for(let ent of this.levelManager.getLevel(this.playingLevel).objects) this.mapObject(ent);
+    }
+
+    public initialize(): void {
+        super.initialize();
+        if(window.localStorage.length > 0) {
+            this.levelManager.addLevel(this.levelParser.parseLevel(`{"objects": ${window.localStorage.getItem('new')}}`))
+            window.localStorage.clear();
+        }
     }
 }

@@ -1,3 +1,4 @@
+import { World } from './../../game/world';
 import { InputHandlerTrack } from './../../game/inputHandler';
 import { DrawableControl } from './control';
 import { StaticSprite } from '../representations/staticSprite';

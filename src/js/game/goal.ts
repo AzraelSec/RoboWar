@@ -4,12 +4,13 @@ import { Vec2 } from '../physics/vec2';
 import { StaticSprite } from '../graphics/representations/staticSprite';
 
 export class Goal extends Obstacle {
+    public static SCALE: number = 0.3
     private static VELOCITY: number = 0.4;
     protected _isMoving: boolean;
     protected _idlingTime: number;
     constructor(initPosition: Vec2, resourceManager: ResourceManager) {
         super(initPosition, new Vec2(0, 0), resourceManager, false);
-        this._image = new StaticSprite(resourceManager.getResource('goal'), 0.3);
+        this._image = new StaticSprite(resourceManager.getResource('goal'), Goal.SCALE);
         this._isMoving = true;
         this._idlingTime = 0;
     }

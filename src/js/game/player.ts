@@ -72,6 +72,7 @@ export class PlayerStatesResources {
 export class Player extends FallingObject {
     public static RUNNING_HORIZONTAL_VELOCITY: number = 0.5;
     public static RUNNING_VERTICAL_VELOCITY: number = 3.5;
+    public static SCALE: number = 0.3;
 
     private _playerStatesResources: PlayerStatesResources;
     private _actualResource: Animation;
@@ -87,9 +88,9 @@ export class Player extends FallingObject {
         super(initPosition, Vec2.Zero(), resourceManager, firstUpdate);
         this._playerState = PlayerStates.IDLING;
         this._playerStatesResources = new PlayerStatesResources(
-            new Animation(resourceManager.getResource('run'), 9, 0.3),
-            new Animation(resourceManager.getResource('idle'), 9, 0.3),
-            new OneShotAnimation(resourceManager.getResource('jump'), 9, 0.3)
+            new Animation(resourceManager.getResource('run'), 9, Player.SCALE),
+            new Animation(resourceManager.getResource('idle'), 9, Player.SCALE),
+            new OneShotAnimation(resourceManager.getResource('jump'), 9, Player.SCALE)
         );
         this._actualResource = this._playerStatesResources.idling;
         this._playerActualMovement = <MovementRequestState> {

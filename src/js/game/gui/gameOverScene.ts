@@ -1,3 +1,4 @@
+import { World } from './../world';
 import { DrawableControl } from './../../graphics/controls/control';
 import { OneShotAnimation } from './../../graphics/representations/oneShotAnimation';
 import { TextControl } from './../../graphics/controls/textBox';
@@ -23,15 +24,15 @@ export class GameOverScene extends Scene {
         let textboxWidth = 1200;
         let textboxHeight = 600;
         
-        super(document, canvas, resourceManager.getDrawable('menu_background'), [
-            new TextButton(new Vec2((canvas.width - sprite_normal.width) * 0.5, (canvas.height - sprite_normal.height) * 0.5 - 300), sprite_normal, 'Replay', () => {
+        super(document, canvas, resourceManager.getDrawable('main_background'), [
+            new TextButton(new Vec2(World.horizontalCenter(sprite_normal), World.horizontalCenter(sprite_normal) - 300), sprite_normal, 'Replay', () => {
                 sceneManager.setScene('play')
             }),
-            new TextButton(new Vec2((canvas.width - sprite_normal.width) * 0.5, (canvas.height - sprite_normal.height) * 0.5 - 100), sprite_normal, 'Menu', () => {
+            new TextButton(new Vec2((World.VIEW_WIDTH - sprite_normal.width) * 0.5, (World.VIEW_HEIGHT - sprite_normal.height) * 0.5 - 100), sprite_normal, 'Menu', () => {
                 sceneManager.setScene('start')
             }),
             deadRobot,
-            new TextControl(new Vec2((canvas.width - textboxWidth) * 0.5, (canvas.height - textboxHeight) * 0.5 + 200), textboxWidth, textboxHeight, 'Game Over')
+            new TextControl(new Vec2((World.VIEW_WIDTH - textboxWidth) * 0.5, (World.VIEW_HEIGHT - textboxHeight) * 0.5 + 200), textboxWidth, textboxHeight, 'Game Over')
         ],);
         this._robotAnimation = robotSprite;
     }

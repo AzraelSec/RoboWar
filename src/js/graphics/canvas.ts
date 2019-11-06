@@ -1,3 +1,4 @@
+import { World } from './../game/world';
 export type Background = string | CanvasGradient | CanvasPattern | HTMLImageElement;
 
 export class Canvas {
@@ -9,7 +10,7 @@ export class Canvas {
     constructor(id:string) {
         this._canvas = <HTMLCanvasElement>document.getElementById(id);
         this._context = this.canvas.getContext('2d');
-        document.addEventListener('resize', this.resizeCanvas);
+        window.addEventListener('resize', () => this.resizeCanvas());
         this.resizeCanvas();
     }
 
@@ -21,7 +22,6 @@ export class Canvas {
         this._context.save();
         if(!(color instanceof HTMLImageElement)) {
             this._context.fillStyle = color;
-            //this._context.scale(0.5, 0.5);
             this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
         }
         else
@@ -34,8 +34,8 @@ export class Canvas {
     }
 
     private resizeCanvas() {
-        this._canvas.height = innerHeight;
-        this._canvas.width = innerWidth;
+        this._canvas.height = World.VIEW_HEIGHT= innerHeight;
+        this._canvas.width = World.VIEW_WIDTH = innerWidth;
     }
 
     public get height() {

@@ -26,7 +26,7 @@ export class WinScene extends Scene {
         
         const starSprite = new StaticSprite(resourceManager.getResource('goal'), 0.3);
 
-        super(document, canvas, resourceManager.getDrawable('menu_background'), [
+        super(document, canvas, resourceManager.getDrawable('main_background'), [
             new TextButton(new Vec2((canvas.width - sprite_normal.width) * 0.5, (canvas.height - sprite_normal.height) * 0.5 - 300), sprite_normal, 'Menu', () => {
                 sceneManager.setScene('start')
             }),
