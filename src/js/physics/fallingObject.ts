@@ -6,8 +6,8 @@ export class FallingObject extends GameObject {
     public static GRAVITY_ACELERATION: number = 0.016//9.8;
     protected _isFloating: boolean;
 
-    constructor(initosition: Vec2, initVelocity: Vec2, resourceManager: ResourceManager, firstUpdate: number) {
-        super(initosition, initVelocity, resourceManager, firstUpdate);
+    constructor(initosition: Vec2, width: number, height: number,  initVelocity: Vec2, resourceManager: ResourceManager, firstUpdate: number) {
+        super(initosition, width, height, initVelocity, resourceManager, firstUpdate);
         this._isFloating = true;
     }
 

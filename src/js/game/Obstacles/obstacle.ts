@@ -7,8 +7,8 @@ export class Obstacle extends GameObject {
     public static SCALE: number = 0.4;
     protected _deadly: boolean;
 
-    constructor(initPosition: Vec2, initVelocity: Vec2, resourceManager: ResourceManager, deadly: boolean) {
-        super(initPosition, initVelocity, resourceManager, 0);
+    constructor(initPosition: Vec2, width: number, height: number, initVelocity: Vec2, resourceManager: ResourceManager, deadly: boolean) {
+        super(initPosition, width, height, initVelocity, resourceManager, 0);
         this._deadly = deadly;
     }
 
@@ -20,7 +20,7 @@ export class Obstacle extends GameObject {
 export class Bomb extends Obstacle {
     public static BOMB_VELOCITY: number = 0.2;
     constructor(initPosition: Vec2, resourceManager: ResourceManager) {
-        super(initPosition, new Vec2(-Bomb.BOMB_VELOCITY, Bomb.BOMB_VELOCITY), resourceManager, true);
+        super(initPosition, 5, 5, new Vec2(-Bomb.BOMB_VELOCITY, Bomb.BOMB_VELOCITY), resourceManager, true);
         this._image = new Animation(resourceManager.getResource('bomb'), 10, Bomb.SCALE);
     }
 
@@ -33,16 +33,12 @@ export class Bomb extends Obstacle {
             this.setVelocity(time, goingUp ? Bomb.BOMB_VELOCITY : -Bomb.BOMB_VELOCITY, this.getVelocity().y);
         
     }
-
-    public get width() {
-        return this._image.width * 0.6;
-    }
 }
 
 export class Mine extends Obstacle {
     public static BOMB_VELOCITY: number = 0.2;
     constructor(initPosition: Vec2, resourceManager: ResourceManager) {
-        super(initPosition, new Vec2(0, Bomb.BOMB_VELOCITY), resourceManager, true);
+        super(initPosition, 5, 5, new Vec2(0, Bomb.BOMB_VELOCITY), resourceManager, true);
         this._image = new Animation(resourceManager.getResource('mine'), 10, Mine.SCALE);
     }
 
@@ -54,27 +50,19 @@ export class Mine extends Obstacle {
     }
 
     public get width() {
-        return this._image.width * 0.6;
+        return this._width;
     }
 }
 
 export class Missile extends Obstacle {
     public static MISSILE_VELOCITY: number = 1;
     constructor(worldWidth: number, initHeight: number, resourceManager: ResourceManager) {
-        super(new Vec2(worldWidth + 100, initHeight ), new Vec2(-Missile.MISSILE_VELOCITY, 0), resourceManager, true);
+        super(new Vec2(worldWidth + 100, initHeight ), 5, 5,  new Vec2(-Missile.MISSILE_VELOCITY, 0), resourceManager, true);
         this._image = new Animation(resourceManager.getResource('missile'), 9, Missile.SCALE);
     }
 
     public update(time: number): void {
         const position = this.getPosition(time);
         if(position.x < -this.width) this.setPosition(time, this._originalPosition.x, this._originalPosition.y);
-    }
-
-    public get width() {
-        return this._image.width * 0.7;
-    }
-
-    public get height() {
-        return this._image.height * 0.5;
     }
 }

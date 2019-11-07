@@ -6,7 +6,7 @@ import { GameOverScene } from './game/gui/gameOverScene';
 import { PlayScene } from './game/gui/playScene';
 import { SceneManager, SceneFrame } from './game/scene/sceneManager';
 import { ResourceManager } from './graphics/resourceLoader';
-import { Canvas } from './graphics/canvas'
+import { Graphics } from './graphics/canvas'
 import { StartScene } from './game/gui/startScene';
 import { JSONObjectType, LevelJSON } from './game/level/levelParser';
 
@@ -27,7 +27,7 @@ const resourceManager = new ResourceManager([
 resourceManager.resourcesPrefetch().then(() => {
     console.log('Resource loaded');
     
-    const canvas = new Canvas('scene');
+    const canvas = new Graphics('scene');
     const sceneManager = new SceneManager();
     const levelManager = new LevelsManager(resourceManager);
     levelManager.addLevel(<LevelJSON> {
@@ -35,15 +35,15 @@ resourceManager.resourcesPrefetch().then(() => {
             {
                 type: JSONObjectType.PLAYER,
                 position: {
-                    x: 50,
-                    y: 0
+                    x: 0,
+                    y: World.WORLD_HEIGHT - 60
                 }
             },
             {
-                type: JSONObjectType.GOAL,
+                type: JSONObjectType.BOX,
                 position: {
-                    x: 500,
-                    y: World.VIEW_HEIGHT - 100
+                    x: 200,
+                    y: World.WORLD_HEIGHT - 200
                 }
             },
             {
@@ -68,6 +68,6 @@ resourceManager.resourcesPrefetch().then(() => {
         name: 'editor', scene: new EditorScene(document, canvas, resourceManager, sceneManager, levelManager)
     });
 
-    sceneManager.setScene('start');
+    sceneManager.setScene('play');
     sceneManager.start();
 }).catch((e: Error) => alert(`Error during resources prefetching: ${e.stack}`));

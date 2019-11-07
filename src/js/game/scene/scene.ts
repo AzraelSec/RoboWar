@@ -2,7 +2,7 @@ import { CollisionScaffold, GameObject, Direction } from './../../physics/gameOb
 import { InputHandlerTrack } from './../inputHandler';
 import { Background } from './../../graphics/canvas';
 import { Control } from '../../graphics/controls/control';
-import { Canvas } from '../../graphics/canvas';
+import { Graphics } from '../../graphics/canvas';
 import { World } from '../world';
 import { Obstacle } from '../obstacles/obstacle';
 import { Player } from '../player';
@@ -16,12 +16,12 @@ export class Scene {
 
     protected _lastUpdate: number;
     protected _fistUpdate: number;
-    protected _canvas: Canvas;
+    protected _canvas: Graphics;
     protected _document: Document;
     protected _background: Background;
     protected _eventsListeners: InputHandlerTrack[];
 
-    constructor(document: Document, canvas: Canvas, background: Background, entities?: (GameObject | Control)[]) {
+    constructor(document: Document, canvas: Graphics, background: Background, entities?: (GameObject | Control)[]) {
         this._objects = [];
         this._controls = [];
 

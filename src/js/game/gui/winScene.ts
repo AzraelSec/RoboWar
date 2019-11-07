@@ -1,3 +1,4 @@
+import { World } from './../world';
 import { GameObject } from './../../physics/gameObject';
 import { Animation } from './../../graphics/representations/animation';
 import { DrawableControl } from './../../graphics/controls/control';
@@ -8,30 +9,24 @@ import { TwoWayButton, ButtonResource, TextButton } from './../../graphics/contr
 import { SceneManager } from './../scene/sceneManager';
 import { ResourceManager } from './../../graphics/resourceLoader';
 import { Scene } from './../scene/scene';
-import { Canvas } from '../../graphics/canvas';
+import { Graphics } from '../../graphics/canvas';
 import { Vec2 } from '../../physics/vec2';
 
 export class WinScene extends Scene {
     private _robotAnimation: OneShotAnimation;
 
-    constructor(document: Document, canvas: Canvas, resourceManager: ResourceManager, sceneManager: SceneManager) {
+    constructor(document: Document, canvas: Graphics, resourceManager: ResourceManager, sceneManager: SceneManager) {
         let button_background = resourceManager.getResource('time_background');
         let sprite_normal = new StaticSprite(button_background);
 
-        let robotSprite = new Animation(resourceManager.getResource('idle'), 9, 1.2, 0.3);
-        let deadRobot = new DrawableControl(new Vec2(canvas.width - robotSprite.width, canvas.height - robotSprite.height), robotSprite);
-
-        let textboxWidth = 500;
-        let textboxHeight = 400;
-        
-        const starSprite = new StaticSprite(resourceManager.getResource('goal'), 0.3);
+        let robotSprite = new Animation(resourceManager.getResource('idle'), 9);
 
         super(document, canvas, resourceManager.getDrawable('main_background'), [
-            new TextButton(new Vec2((canvas.width - sprite_normal.width) * 0.5, (canvas.height - sprite_normal.height) * 0.5 - 300), sprite_normal, 'Menu', () => {
+            new TextButton(new Vec2((World.WORLD_WIDTH - 150) * 0.5, (World.WORLD_HEIGHT - 100) * 0.5 + 100), 150, 75, sprite_normal, 'Menu', () => {
                 sceneManager.setScene('start')
             }),
-            deadRobot,
-            new TextControl(new Vec2((canvas.width - textboxWidth) * 0.5, (canvas.height - textboxHeight) * 0.5), textboxWidth, textboxHeight, 'You Win!')
+            new DrawableControl(new Vec2(World.WORLD_WIDTH - 200, World.WORLD_HEIGHT - 200), 200, 200, robotSprite),
+            new TextControl(new Vec2((World.WORLD_WIDTH - 650) * 0.5, (World.WORLD_HEIGHT - 100) * 0.5), 650, 100, 'You Win!')
         ],);
         this._robotAnimation = robotSprite;
     }

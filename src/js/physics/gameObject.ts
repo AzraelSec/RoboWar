@@ -42,8 +42,10 @@ export class GameObject implements IPhysical, InputHandler {
     protected _playerCollisionCallback: PlayerCollisionCallback;
     protected _inputHandlers: InputHandlerTrack[];
     protected _resourceManager: ResourceManager;
+    protected _width: number;
+    protected _height: number;
 
-    constructor(initPosition: Vec2, initVelocity: Vec2, resourceManager: ResourceManager, firstUpdate: number, playerCollisionCallback?: PlayerCollisionCallback) {
+    constructor(initPosition: Vec2, width: number, height: number, initVelocity: Vec2, resourceManager: ResourceManager, firstUpdate: number, playerCollisionCallback?: PlayerCollisionCallback) {
         this._originalPosition = new Vec2(initPosition.x, initPosition.y);
         this._initPosition= initPosition;
 
@@ -55,6 +57,8 @@ export class GameObject implements IPhysical, InputHandler {
         this._firstUpdate = firstUpdate;
         this._playerCollisionCallback = playerCollisionCallback || (() => {});
         this._inputHandlers = [];
+        this._width = width;
+        this._height = height;
     }
 
     //Velocity Management
@@ -89,7 +93,8 @@ export class GameObject implements IPhysical, InputHandler {
         let position: Vec2 = this.getPosition(time);
         context.save();
         if(this._image)
-            this._image.draw(context, position.x - Math.abs((this._image.width - this.width) * 0.5), position.y - Math.abs((this._image.height - this.height) * 0.5), this._velocity.x < 0);
+            this._image.draw(context, position.x, position.y, this._width, this._height, this._velocity.x < 0);
+        context.strokeRect(position.x, position.y, this._width, this._height)
         context.restore();
     }
 
@@ -103,9 +108,9 @@ export class GameObject implements IPhysical, InputHandler {
     protected isIn(time:number, x: number, y: number): boolean {
         let position: Vec2 = this.getPosition(time);
         return position.x < x  && 
-        x < position.x + this._image.width && 
+        x < position.x + this._width && 
         position.y < y &&
-        y < position.y + this._image.height;
+        y < position.y + this._height;
     }
     
     public inputAttach(documentReference: Document): InputHandlerTrack[] {
@@ -126,11 +131,11 @@ export class GameObject implements IPhysical, InputHandler {
     }
 
     public get width() {
-        return this._image.width || 0;
+        return this._width;
     }
 
     public get height() {
-        return this._image.height || 0;
+        return this._height;
     }
 
     //Collision Detection
@@ -160,14 +165,4 @@ export class GameObject implements IPhysical, InputHandler {
             }
         return null;
     }
-
-    /*public toJSON(): JSONGameObject {
-        return <JSONGameObject> {
-            type: LevelParser.parseObjectType(this),
-            position: {
-                x: this._originalPosition.x,
-                y: this._originalPosition.y
-            }
-        }
-    }*/
 }

@@ -12,33 +12,30 @@ export class StaticSprite implements IDrawable {
         scaleFactor?: number,
     ) {
         this._spritesheet = resource;
-        this._height = resource.content.height;
+        this._scaleFactor = scaleFactor || 1;
         this._width = resource.content.width;
-        this._scaleFactor = scaleFactor || 0.8;
+        this._height = resource.content.height;
     }
 
-    public draw(context: CanvasRenderingContext2D, x: number, y: number, _: boolean): void {
+    public draw(context: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, _: boolean): void {
         context.save();
+        context.translate(
+            x + 0.5 * w,
+            y + 0.5 * h
+        );
+        context.scale(this._scaleFactor, this._scaleFactor);
         context.drawImage(
             this._spritesheet.content,
             0,
             0,
             this._width,
             this._height,
-            x,
-            y,
-            this.width,
-            this.height
+            - w / 2,
+            - h / 2,
+            w,
+            h
         );
         context.restore();
-    }
-
-    public get width(): number {
-        return this._width * this._scaleFactor;
-    }
-
-    public get height(): number {
-        return this._height * this._scaleFactor;
     }
 
     public get spritesheet(): HTMLImageElement {

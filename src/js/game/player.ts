@@ -66,7 +66,7 @@ export class PlayerStatesResources {
 export class Player extends FallingObject {
     public static RUNNING_HORIZONTAL_VELOCITY: number = 0.5;
     public static RUNNING_VERTICAL_VELOCITY: number = 3.5;
-    public static SCALE: number = 0.3;
+    public static SCALE: number = 2;
 
     private _playerStatesResources: PlayerStatesResources;
     private _actualResource: Animation;
@@ -75,7 +75,7 @@ export class Player extends FallingObject {
     private _playerMovementRequest: MovementRequestState;
 
     constructor(initPosition: Vec2, resourceManager: ResourceManager) {
-        super(initPosition, Vec2.Zero(), resourceManager, 0);
+        super(initPosition, 50, 50, Vec2.Zero(), resourceManager, 0);
         this._playerState = PlayerStates.IDLING;
         this._playerStatesResources = new PlayerStatesResources(
             new Animation(resourceManager.getResource('run'), 9, Player.SCALE),
@@ -100,7 +100,7 @@ export class Player extends FallingObject {
         let onABrick = undefined !== colliding.find( obj => obj.side === Direction.BOTTOM && oldVelocity.y > 0)
         if (this._isFloating && onABrick) 
             this.bottomBoundsHitHandling();
-        else if(oldPosition.y < World.VIEW_HEIGHT - this.height) this._isFloating = true;
+        else if(oldPosition.y < World.WORLD_HEIGHT - this.height) this._isFloating = true;
         
         super.update(time);
         
@@ -159,8 +159,8 @@ export class Player extends FallingObject {
         }
         if(lastPosition.x < 0) leftBounce(0);
         else if(lastPosition.y < 0) topBounce(0);
-        else if(lastPosition.x + this.width > World.VIEW_WIDTH) rightBounce(World.VIEW_WIDTH);
-        else if(lastPosition.y + this.height > World.VIEW_HEIGHT) bottomBounce(World.VIEW_HEIGHT);
+        else if(lastPosition.x + this.width > World.WORLD_WIDTH) rightBounce(World.WORLD_WIDTH);
+        else if(lastPosition.y + this.height > World.WORLD_HEIGHT) bottomBounce(World.WORLD_HEIGHT);
     }
 
     private bottomBoundsHitHandling(): void {
@@ -187,14 +187,6 @@ export class Player extends FallingObject {
                 this.setVelocity(time, this._velocity.x, 0);
             }
         }
-    }
-
-    public get width() {
-        return this._image.width * 0.5;
-    }
-
-    public get height() {
-        return this._image.height * 0.9;
     }
 
     // INPUT MANAGEMENT

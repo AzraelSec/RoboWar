@@ -3,7 +3,7 @@ import { World } from './../world';
 import { Level } from './level';
 import { LongBlock, Box } from './../obstacles/block';
 import { Player } from './../player';
-import { Canvas } from './../../graphics/canvas';
+import { Graphics } from './../../graphics/canvas';
 import { Goal } from './../goal';
 import { Bomb, Missile, Mine } from './../obstacles/obstacle';
 import { ResourceManager } from './../../graphics/resourceLoader';

@@ -10,7 +10,7 @@ import { TwoWayButton, ButtonResource, OneWayButton, TextButton } from './../../
 import { MenuControl } from '../../graphics/controls/menu';
 import { JSONObjectType, LevelObjectJSON, LevelJSON } from './../level/levelParser';
 import { ResourceManager } from './../../graphics/resourceLoader';
-import { Canvas } from './../../graphics/canvas';
+import { Graphics } from './../../graphics/canvas';
 import { Scene } from './../scene/scene';
 import { Vec2 } from '../../physics/vec2';
 import { StaticSprite } from '../../graphics/representations/staticSprite';
@@ -23,7 +23,7 @@ export class EditorScene extends Scene {
     private _objectsSprite: StaticSprite[];
     protected _levelsManager: LevelsManager;
 
-    constructor(document: Document, canvas: Canvas, resourceManager: ResourceManager, sceneManager: SceneManager, levelsManager: LevelsManager) {
+    constructor(document: Document, canvas: Graphics, resourceManager: ResourceManager, sceneManager: SceneManager, levelsManager: LevelsManager) {
         const sprites: StaticSprite[] = [
             new StaticSprite(resourceManager.getResource('player_static'), Player.SCALE),
             new StaticSprite(resourceManager.getResource('missile_static'), Missile.SCALE),
@@ -35,8 +35,8 @@ export class EditorScene extends Scene {
             new StaticSprite(resourceManager.getResource('goal'), Goal.SCALE)
         ];
 
-        const menu: MenuControl = new MenuControl(new Vec2(World.VIEW_WIDTH - EditorScene._menuWidth, World.WORLD_HEIGHT + 50), EditorScene._menuWidth, World.VIEW_HEIGHT, resourceManager, [
-            new OneWayButton(
+        const menu: MenuControl = new MenuControl(new Vec2(0, 0), EditorScene._menuWidth, World.WORLD_HEIGHT, resourceManager, [
+            /*new OneWayButton(
                 Vec2.Zero(), sprites[JSONObjectType.PLAYER], () => this._selectedObject = JSONObjectType.PLAYER
             ),
             new OneWayButton(
@@ -59,12 +59,12 @@ export class EditorScene extends Scene {
             ),
             new OneWayButton(
                 Vec2.Zero(), sprites[JSONObjectType.GOAL], () => this._selectedObject = JSONObjectType.GOAL
-            ),
+            ),*/
         ])
         const buttonSprite: StaticSprite = new StaticSprite(resourceManager.getResource('time_background'), 0.5);
         super(document, canvas, resourceManager.getDrawable('main_background'), [
             menu,
-            new TextButton(Vec2.Zero(), buttonSprite, 'Save', () => {
+            /*new TextButton(Vec2.Zero(), buttonSprite, 'Save', () => {
                 levelsManager.addLevel(<LevelJSON> {
                     id: 1,
                     objects: this._levelObjects
@@ -75,7 +75,7 @@ export class EditorScene extends Scene {
             new TextButton(new Vec2(buttonSprite.width, 0), buttonSprite, 'Back', () => {
                 this._levelObjects = []
                 sceneManager.setScene('start');
-            })
+            })*/
         ]);
 
         this._selectedObject = null;
@@ -86,8 +86,8 @@ export class EditorScene extends Scene {
 
     public play(newTime: number): void {
         super.play(newTime);
-        for(let object of this._levelObjects)
-            this._canvas.context.drawImage(this._objectsSprite[object.type].spritesheet, object.position.x, object.position.y, this._objectsSprite[object.type].width, this._objectsSprite[object.type].height)
+        //for(let object of this._levelObjects)
+            //this._canvas.context.drawImage(this._objectsSprite[object.type].spritesheet, object.position.x, object.position.y, this._objectsSprite[object.type].width, this._objectsSprite[object.type].height)
     }
 
     public initialize(): void {
@@ -103,8 +103,8 @@ export class EditorScene extends Scene {
             this._levelObjects.push(<LevelObjectJSON> {
                 type: this._selectedObject,
                 position: {
-                    x: event.clientX - this._objectsSprite[this._selectedObject].width * 0.5,
-                    y: event.clientY - this._objectsSprite[this._selectedObject].height * 0.5
+                    //x: event.clientX - this._objectsSprite[this._selectedObject].width * 0.5,
+                    //y: event.clientY - this._objectsSprite[this._selectedObject].height * 0.5
                 }
             });
             this._selectedObject = null;

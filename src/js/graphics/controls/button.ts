@@ -18,25 +18,27 @@ export class TwoWayButton extends DrawableControl {
     protected _state: ButtonState;
     protected _action: () => void;
     
-    constructor(position: Vec2, representation: ButtonResource, action: () => void) {
-        super(position, representation.normal);
+    constructor(position: Vec2, width: number, height: number, representation: ButtonResource, action: () => void) {
+        super(position, width, height, representation.normal);
         this._buttonResource = representation;
         this._action = action;
         this._state = ButtonState.normal;
     }
 
     protected buttonDownHandling(event: MouseEvent): void {
-        if(this.isIn(event.clientX, event.clientY) && this._state === ButtonState.normal) {
+        const p = World.viewToWorld(event.clientX, event.clientY)
+        if(this.isIn(p.x, p.y) && this._state === ButtonState.normal) {
             this.changeRepresentation(this._buttonResource.pressed);
             this._state = ButtonState.pressed;
         }
     }
 
     protected buttonUpHandling(event: MouseEvent): void {
+        const p = World.viewToWorld(event.clientX, event.clientY)
         if(this._state === ButtonState.pressed) {
             this.changeRepresentation(this._buttonResource.normal);
             this._state = ButtonState.normal;
-            if(this.isIn(event.clientX, event.clientY)) this._action();
+            if(this.isIn(p.x, p.y)) this._action();
         }
     }
 
@@ -54,8 +56,9 @@ export class TwoWayButton extends DrawableControl {
 }
 
 export class OneWayButton extends TwoWayButton {
-    constructor(position: Vec2, representation: StaticSprite, action: () => void) {
+    constructor(position: Vec2, width: number, height: number, representation: StaticSprite, action: () => void) {
         super(position,
+            width, height,
             <ButtonResource> {
                 normal: representation,
                 pressed: representation}
@@ -63,14 +66,16 @@ export class OneWayButton extends TwoWayButton {
     }
 
     protected buttonDownHandling(event: MouseEvent): void {
-        if(this.isIn(event.clientX, event.clientY) && this._state === ButtonState.normal)
+        const p = World.viewToWorld(event.clientX, event.clientY)
+        if(this.isIn(p.x, p.y) && this._state === ButtonState.normal)
             this._state = ButtonState.pressed;
     }
 
     protected buttonUpHandling(event: MouseEvent): void {
         if(this._state === ButtonState.pressed) {
+            const p = World.viewToWorld(event.clientX, event.clientY)
             this._state = ButtonState.normal;
-            if(this.isIn(event.clientX, event.clientY)) this._action();
+            if(this.isIn(p.x, p.y)) this._action();
         }
     }
 }
@@ -80,8 +85,8 @@ export class TextButton extends OneWayButton {
     private _font: string;
     private _fontSize: number;
 
-    constructor(position: Vec2, background: StaticSprite, text: string, action: () => void) {
-        super(position, background, action);
+    constructor(position: Vec2, width: number, height: number, background: StaticSprite, text: string, action: () => void) {
+        super(position, width, height, background, action);
         this._text = text;
         this._font = 'ethnocentricregular';
         this._fontSize = 0;
@@ -90,10 +95,9 @@ export class TextButton extends OneWayButton {
     public drawControl(context: CanvasRenderingContext2D): void {
         context.save();
         this.balanceTextSize(context);
-        console.log(`fontsize: ${this._fontSize}`)
-        this._image.draw(context, this._position.x, this._position.y, false);
+        this._image.draw(context, this._position.x, this._position.y, this._width, this._height, false);
         this.adjustEveryThing(context);
-        context.fillText(this._text, this._position.x + this.width * 0.5, this._position.y + this.height * 0.5);
+        context.fillText(this._text, this._position.x + this._width * 0.5, this._position.y + this._height * 0.5);
         context.restore();
     }
 

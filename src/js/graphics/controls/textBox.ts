@@ -1,3 +1,4 @@
+import { World } from './../../game/world';
 import { Background } from './../canvas';
 import { Control } from './control';
 import { Vec2 } from '../../physics/vec2';
@@ -26,14 +27,15 @@ export class TextControl extends Control {
         this.balanceTextSize(context);
         if(this._background !== null) {
             if(this._background instanceof HTMLImageElement)
-            context.drawImage(this._background, this._position.x, this._position.y, this.width, this.height);
+                context.drawImage(this._background, this._position.x, this._position.y, this._width, this._height);
             else {
                 context.fillStyle = this._background;
-                context.fillRect(this._position.x, this._position.y, this.width, this.height);
+                context.fillRect(this._position.x, this._position.y, this._width, this._height);
             }
         }
+        
         this.adjustEveryThing(context);
-        context.fillText(this._text, this._position.x + this.width * 0.5, this._position.y + this.height * 0.5);
+        context.fillText(this._text, this._position.x + this._width * 0.5, this._position.y + this._height * 0.5);
         context.restore();
     }
     

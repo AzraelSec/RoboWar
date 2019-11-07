@@ -7,10 +7,10 @@ import { Vec2 } from '../../physics/vec2';
 import { World } from '../../game/world';
 
 export class MenuControl extends Control {
-    public static CELL_WIDTH: number = 50;
+    public static CELL_WIDTH: number = 20;
     public static CELL_HEIGHT: number = 50;
 
-    protected _controls: TwoWayButton[];
+    protected _controls: OneWayButton[];
     protected _background: StaticSprite;
     protected _closed: boolean;
     private _closedPosition: Vec2;
@@ -26,17 +26,17 @@ export class MenuControl extends Control {
         for(let index in this._controls) 
             this._controls[index].resize(MenuControl.CELL_WIDTH, MenuControl.CELL_HEIGHT);
         
-        this._closedPosition = new Vec2(World.VIEW_WIDTH - 120, World.VIEW_HEIGHT - 120);
+        this._closedPosition = new Vec2(World.WORLD_WIDTH - 100, World.WORLD_HEIGHT - 100);
         this._normalPosition = new Vec2(position.x, position.y);
-        this._closingButton = new OneWayButton(Vec2.Zero(), new StaticSprite(resourceManager.getResource('replay_button_1'), 0.4), () => this._closed ? this.open() : this.close())
+        this._closingButton = new OneWayButton(Vec2.Zero(), MenuControl.CELL_WIDTH, MenuControl.CELL_HEIGHT, new StaticSprite(resourceManager.getResource('replay_button_1'), 0.4), () => console.log("ciao"))//this._closed ? this.open() : this.close())
         this.adjustButtonsPosition();
-        this.position = this._closedPosition;
+        this.position = this._normalPosition;
         this._controls.push(this._closingButton);
     }
     
     public drawControl(context: CanvasRenderingContext2D): void {
         context.save();
-        this._background.draw(context, this._position.x, this._position.y, false);
+        this._background.draw(context, this._position.x, this._position.y, 40, 20, false);
         for(let index in this._controls)
             this._controls[index].drawControl(context);
         context.restore();

@@ -4,7 +4,7 @@ import { GameObject } from './../../physics/gameObject';
 import { TextControl } from './../../graphics/controls/textBox';
 import { ResourceManager } from '../../graphics/resourceLoader';
 import { Scene } from '../scene/scene';
-import { Canvas } from '../../graphics/canvas';
+import { Graphics } from '../../graphics/canvas';
 import { Vec2 } from '../../physics/vec2';
 import { SceneManager } from '../scene/sceneManager';
 
@@ -20,9 +20,9 @@ export class PlayScene extends Scene {
     protected timeCounter: number;
     protected playingLevel: number;
 
-    constructor(document: Document, canvas: Canvas, resourceManager: ResourceManager, sceneManager: SceneManager, levelManager: LevelsManager) {
-        let timeText = new TextControl(new Vec2(0, 5), 300, 70, `Time: 0`, resourceManager.getDrawable('time_background'));
-        let bestTimeText = new TextControl(new Vec2(timeText.width, 5), 300, 70, `Best: -`, resourceManager.getDrawable('time_background'));
+    constructor(document: Document, canvas: Graphics, resourceManager: ResourceManager, sceneManager: SceneManager, levelManager: LevelsManager) {
+        let timeText = new TextControl(new Vec2(0, 5), 150, 50, `Time: 0`, resourceManager.getDrawable('time_background'));
+        let bestTimeText = new TextControl(new Vec2(150, 5), 150, 50, `Best: -`, resourceManager.getDrawable('time_background'));
         
         super(document, canvas, resourceManager.getDrawable('main_background'), [timeText, bestTimeText]);
 

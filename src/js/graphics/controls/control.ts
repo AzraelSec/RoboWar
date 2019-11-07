@@ -54,8 +54,8 @@ export class Control implements InputHandler {
 export class DrawableControl extends Control {
     protected _image: IDrawable;
 
-    constructor(position: Vec2, representation: IDrawable) {
-        super(position, representation.width, representation.height);
+    constructor(position: Vec2, width: number, height: number, representation: IDrawable) {
+        super(position, width, height);
         this._image = representation;
     }
 
@@ -64,8 +64,8 @@ export class DrawableControl extends Control {
         context.save();
         context.translate(this._position.x, this._position.y)
         //context.fillRect(0, 0, this._width, this._height)
-        context.scale(this.width / this._image.width, this.height / this._image.height);
-        this._image.draw(context, 0, 0, false);
+        //context.scale(this.width / this._image.width, this.height / this._image.height);
+        this._image.draw(context, 0, 0, this._width, this._height, false);
         context.restore();
     }
 
