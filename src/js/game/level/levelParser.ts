@@ -27,7 +27,6 @@ export interface LevelObjectJSON {
 }
 
 export interface LevelJSON {
-    id: number;
     objects: LevelObjectJSON[];
 }
 
@@ -42,7 +41,6 @@ export class LevelParser {
         const levelObjects: GameObject[] = [];
         
         for(let object of JSONObject.objects) {
-            //object.position.y = (World.VIEW_HEIGHT - object.position.y)
             if(object.type === JSONObjectType.BLOCK)
                 levelObjects.push(new Block(new Vec2(object.position.x, object.position.y), this._resourceManager));
             else if(object.type === JSONObjectType.LONG_BLOCK)

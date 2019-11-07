@@ -34,7 +34,7 @@ export class Control implements InputHandler {
         this._height = height;
     }
 
-    protected isIn(x: number, y: number): boolean {
+    public isIn(x: number, y: number): boolean {
         return this._position.x < x  && 
         x < this._position.x + this._width && 
         this._position.y < y &&

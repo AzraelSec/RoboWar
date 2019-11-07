@@ -9,13 +9,14 @@ import { ResourceManager } from './graphics/resourceLoader';
 import { Canvas } from './graphics/canvas'
 import { StartScene } from './game/gui/startScene';
 import { JSONObjectType, LevelJSON } from './game/level/levelParser';
+import defaultLevels from './game/gui/defaultLevels';
 
 //Resource Targeting
 const resourceManager = new ResourceManager([
     'player/idle', 'player/run', 'player/jump', 'player/dead', 'shot',
     'main_background', 'gui/menu_background',
     'red_barrel', 'goal',
-    'gui/play_button_1', 'gui/play_button_2',
+    'gui/sound_button_1', 'gui/sound_button_2',
     'gui/menu_button_1', 'gui/menu_button_2',
     'gui/replay_button_1', 'gui/replay_button_2',
     'gui/time_background', 'block', 'long_block', 'box',
@@ -25,36 +26,10 @@ const resourceManager = new ResourceManager([
 
 //Resource Prefetching
 resourceManager.resourcesPrefetch().then(() => {
-    console.log('Resource loaded');
-    
     const canvas = new Canvas('scene');
     const sceneManager = new SceneManager();
     const levelManager = new LevelsManager(resourceManager);
-    levelManager.addLevel(<LevelJSON> {
-        objects: [
-            {
-                type: JSONObjectType.PLAYER,
-                position: {
-                    x: 50,
-                    y: 0
-                }
-            },
-            {
-                type: JSONObjectType.GOAL,
-                position: {
-                    x: 500,
-                    y: World.VIEW_HEIGHT - 100
-                }
-            },
-            {
-                type: JSONObjectType.BOMB,
-                position: {
-                    x: 300,
-                    y: World.VIEW_HEIGHT - 350
-                }
-            }
-        ]
-    });
+    defaultLevels.forEach(level => levelManager.addLevel(<LevelJSON>level))
 
     sceneManager.addScene(<SceneFrame> { 
         name: 'start', scene: new StartScene(document, canvas, resourceManager, sceneManager)

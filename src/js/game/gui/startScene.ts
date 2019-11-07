@@ -1,5 +1,5 @@
 import { World } from './../world';
-import { TextButton } from './../../graphics/controls/button';
+import { TextButton, TwoWayButton, ButtonResource } from './../../graphics/controls/button';
 import { Animation } from './../../graphics/representations/animation';
 import { ResourceManager } from '../../graphics/resourceLoader';
 import { Scene } from '../scene/scene';
@@ -11,9 +11,13 @@ import { TextControl } from '../../graphics/controls/textBox';
 import { DrawableControl } from '../../graphics/controls/control';
 
 export class StartScene extends Scene {
+    private player: HTMLAudioElement;
+    private playing: boolean;
     constructor(document: Document, canvas: Canvas, resourceManager: ResourceManager, sceneManager: SceneManager) {
         let button_background = resourceManager.getResource('time_background');
         let sprite_normal = new StaticSprite(button_background);
+        let normalButton = new StaticSprite(resourceManager.getResource('sound_button_1'), 0.5);
+        let pressedButton = new StaticSprite(resourceManager.getResource('sound_button_2'), 0.5);
 
         let textboxWidth = 1200;
         let textboxHeight = 500;
@@ -30,6 +34,22 @@ export class StartScene extends Scene {
             }),
             new TextControl(new Vec2((canvas.width - textboxWidth) * 0.5, (canvas.height - textboxHeight) * 0.5 - 200), textboxWidth, textboxHeight, 'RoboWar'),
             new DrawableControl(new Vec2(0, World.alignBottom(spriteRobot) + 50), spriteRobot),
+            new TwoWayButton(new Vec2((canvas.width - normalButton.width) * 0.5, (canvas.height - normalButton.height) * 0.5 + sprite_normal.height * 2), <ButtonResource> {
+                normal: normalButton,
+                pressed: pressedButton
+            }, () => {
+                if(!this.playing) {
+                    this.player.play();
+                    this.playing = true;
+                } else {
+                    this.player.pause();
+                    this.playing = false;
+                }
+            })
         ],);
+        this.player = new Audio('/assets/music.wav');
+        this.player.load();
+        this.player.loop = true;
+        this.playing = false;
     }
 }

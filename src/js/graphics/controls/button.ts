@@ -90,7 +90,6 @@ export class TextButton extends OneWayButton {
     public drawControl(context: CanvasRenderingContext2D): void {
         context.save();
         this.balanceTextSize(context);
-        console.log(`fontsize: ${this._fontSize}`)
         this._image.draw(context, this._position.x, this._position.y, false);
         this.adjustEveryThing(context);
         context.fillText(this._text, this._position.x + this.width * 0.5, this._position.y + this.height * 0.5);

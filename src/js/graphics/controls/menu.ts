@@ -71,4 +71,8 @@ export class MenuControl extends Control {
         
         this._closingButton.position = new Vec2(this._position.x + (this.width - 100) * 0.5, this._position.y + 25);
     }
+
+    public hittingOpeningButton(x: number, y: number): boolean {
+        return this._closingButton.isIn(x, y);
+    }
 }

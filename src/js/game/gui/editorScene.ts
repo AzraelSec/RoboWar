@@ -22,6 +22,8 @@ export class EditorScene extends Scene {
     private _levelObjects: JSONGameObject[];
     private _objectsSprite: StaticSprite[];
     protected _levelsManager: LevelsManager;
+    private _menu: MenuControl;
+    private _draggingPosition: Vec2;
 
     constructor(document: Document, canvas: Canvas, resourceManager: ResourceManager, sceneManager: SceneManager, levelsManager: LevelsManager) {
         const sprites: StaticSprite[] = [
@@ -65,6 +67,7 @@ export class EditorScene extends Scene {
         super(document, canvas, resourceManager.getDrawable('main_background'), [
             menu,
             new TextButton(Vec2.Zero(), buttonSprite, 'Save', () => {
+                console.debug(JSON.stringify(this._levelObjects))
                 levelsManager.addLevel(<LevelJSON> {
                     id: 1,
                     objects: this._levelObjects
@@ -75,19 +78,26 @@ export class EditorScene extends Scene {
             new TextButton(new Vec2(buttonSprite.width, 0), buttonSprite, 'Back', () => {
                 this._levelObjects = []
                 sceneManager.setScene('start');
+            }),
+            new TextButton(new Vec2(buttonSprite.width * 2, 0), buttonSprite, 'Undo', () => {
+                this._levelObjects.pop();
             })
         ]);
 
         this._selectedObject = null;
         this._levelObjects = [];
         this._objectsSprite = sprites;
+        this._menu = menu;
         this._levelsManager = levelsManager;
+        this._draggingPosition = null;
     }
 
     public play(newTime: number): void {
         super.play(newTime);
         for(let object of this._levelObjects)
             this._canvas.context.drawImage(this._objectsSprite[object.type].spritesheet, object.position.x, object.position.y, this._objectsSprite[object.type].width, this._objectsSprite[object.type].height)
+        if(this._selectedObject !== null && this._draggingPosition !== null)
+            this._canvas.context.drawImage(this._objectsSprite[this._selectedObject].spritesheet, this._draggingPosition.x, this._draggingPosition.y, this._objectsSprite[this._selectedObject].width, this._objectsSprite[this._selectedObject].height);
     }
 
     public initialize(): void {
@@ -95,19 +105,29 @@ export class EditorScene extends Scene {
         this._eventsListeners.push(<InputHandlerTrack> {
             type: 'mousedown', callback: this.addObject.bind(this)
         });
+        this._eventsListeners.push(<InputHandlerTrack> {
+            type: 'mousemove', callback: this.dragObject.bind(this)
+        })
         window.addEventListener('mousedown', this.addObject.bind(this));
+        window.addEventListener('mousemove', this.dragObject.bind(this));
     }
 
     private addObject(event: MouseEvent): void {
-        if(this._selectedObject !== null) {
-            this._levelObjects.push(<LevelObjectJSON> {
-                type: this._selectedObject,
-                position: {
-                    x: event.clientX - this._objectsSprite[this._selectedObject].width * 0.5,
-                    y: event.clientY - this._objectsSprite[this._selectedObject].height * 0.5
-                }
-            });
-            this._selectedObject = null;
-        }
+        if(!this._menu.hittingOpeningButton(event.x, event.y))
+            if(this._selectedObject !== null) {
+                this._levelObjects.push(<LevelObjectJSON> {
+                    type: this._selectedObject,
+                    position: {
+                        x: event.clientX - this._objectsSprite[this._selectedObject].width * 0.5,
+                        y: event.clientY - this._objectsSprite[this._selectedObject].height * 0.5
+                    }
+                });
+                this._selectedObject = null;
+            }
+    }
+
+    private dragObject(event: MouseEvent): void {
+        if(this._selectedObject != null) 
+            this._draggingPosition = new Vec2(event.clientX - this._objectsSprite[this._selectedObject].width * 0.5, event.clientY - this._objectsSprite[this._selectedObject].height * 0.5)
     }
 }
