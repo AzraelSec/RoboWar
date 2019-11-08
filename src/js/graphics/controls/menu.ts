@@ -1,6 +1,6 @@
 import { StaticSprite } from './../representations/staticSprite';
 import { InputHandlerTrack } from '../../game/inputHandler';
-import { TwoWayButton, OneWayButton } from './button';
+import { TwoWayButton, OneWayButton, ButtonResource } from './button';
 import { ResourceManager } from '../resourceLoader';
 import { Control, DrawableControl } from './control';
 import { Vec2 } from '../../physics/vec2';
@@ -14,7 +14,7 @@ export class MenuControl extends Control {
     protected _background: StaticSprite;
     protected _closed: boolean;
     private _closedPosition: Vec2;
-    private _closingButton: OneWayButton;
+    private _closingButton: TwoWayButton;
     private _normalPosition: Vec2;
 
     constructor(position: Vec2, width: number, height: number, resourceManager: ResourceManager, controls?: TwoWayButton[]) {
@@ -28,7 +28,11 @@ export class MenuControl extends Control {
         
         this._closedPosition = new Vec2(World.VIEW_WIDTH - 120, World.VIEW_HEIGHT - 120);
         this._normalPosition = new Vec2(position.x, position.y);
-        this._closingButton = new OneWayButton(Vec2.Zero(), new StaticSprite(resourceManager.getResource('replay_button_1'), 0.4), () => this._closed ? this.open() : this.close())
+        //this._closingButton = new OneWayButton(Vec2.Zero(), new StaticSprite(resourceManager.getResource(''), 0.4), () => this._closed ? this.open() : this.close())
+        this._closingButton = new TwoWayButton(Vec2.Zero(), <ButtonResource> {
+            normal: new StaticSprite(resourceManager.getResource('opening_editor_menu_1'), 0.4),
+            pressed: new StaticSprite(resourceManager.getResource('opening_editor_menu_2'), 0.4)
+        }, () => this._closed ? this.open() : this.close())
         this.adjustButtonsPosition();
         this.position = this._closedPosition;
         this._controls.push(this._closingButton);

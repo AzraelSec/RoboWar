@@ -17,7 +17,7 @@ const resourceManager = new ResourceManager([
     'main_background', 'gui/menu_background',
     'red_barrel', 'goal',
     'gui/sound_button_1', 'gui/sound_button_2',
-    'gui/menu_button_1', 'gui/menu_button_2',
+    'gui/opening_editor_menu_1', 'gui/opening_editor_menu_2',
     'gui/replay_button_1', 'gui/replay_button_2',
     'gui/time_background', 'block', 'long_block', 'box',
     'obstacles/bomb', 'obstacles/mine', 'obstacles/missile',

@@ -123,6 +123,7 @@ export class EditorScene extends Scene {
                     }
                 });
                 this._selectedObject = null;
+                this._draggingPosition = null;
             }
     }
 
