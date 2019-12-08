@@ -19,7 +19,7 @@ RoboWar is a simple and minimalistic browser game written in **TypeScript** in w
 In addition to the simple play scene, is it possible to create your own levels which will be pushed at the end of the levels' queue.
 
 <div align="center">
-    <img alt="RoboWar Level Editor GIF" src="https://github.com/AzraelSec/RoboWar/Editor.gif">
+    <img alt="RoboWar Level Editor GIF" src="https://github.com/AzraelSec/RoboWar/blob/master/Editor.gif">
 </div>
 
 You just need to pick the element you want to add and move them to their final position. At the moment theese are the available elements: each of one has a specific motion and and properties.
